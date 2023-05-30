@@ -1,5 +1,7 @@
 package ru.ponomarchukpn.astonfinalproject.data.repository
 
+import android.content.Context
+import android.net.ConnectivityManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.ponomarchukpn.astonfinalproject.data.database.AppDatabase
@@ -10,27 +12,35 @@ import ru.ponomarchukpn.astonfinalproject.domain.repository.CharactersRepository
 import javax.inject.Inject
 
 class CharactersRepositoryImpl @Inject constructor(
+    private val context: Context,
     private val database: AppDatabase,
     private val apiService: CharactersApiService,
     private val mapper: CharacterMapper
 ) : CharactersRepository {
 
     private var pageNumber = INITIAL_PAGE_NUMBER
-    private var hasNextPage = HAS_NEXT_PAGE_DEFAULT
 
     override fun getNextCharactersPage() = flow {
-        if (!hasNextPage) {
-            emit(emptyList())
-        }
         if (isInternetAvailable()) {
-            pageNumber++
-            val pageDto = apiService.loadCharactersPage(pageNumber)
-            //сохранять данные в БД
-            val responseDto = mapper.mapCharactersPageToResponseDto(pageDto)
-            hasNextPage = responseDto.hasNextPage
-            emit(responseDto.characters)
+            try {
+                val pageDto = apiService.loadCharactersPage(pageNumber)
+                database.charactersDao().insertCharactersList(
+                    mapper.mapPageDtoToDbModelList(pageDto, pageNumber)
+                )
+                pageNumber++
+                val responseDto = mapper.mapCharactersPageToResponseDto(pageDto)
+                emit(responseDto.characters)
+            } catch (exception: Throwable) {
+                emit(emptyList())
+            }
         } else {
-            //таким же образом получать из БД и возвращать
+            val dbModels = database.charactersDao().getCharactersPage(pageNumber)
+            if (dbModels.isNotEmpty()) {
+                pageNumber++
+                emit(mapper.mapDbModelsListToEntitiesList(dbModels))
+            } else {
+                emit(emptyList())
+            }
         }
     }
 
@@ -39,13 +49,16 @@ class CharactersRepositoryImpl @Inject constructor(
     }
 
     private fun isInternetAvailable(): Boolean {
-        //TODO
-        return true
+        //TODO земенить deprecated функционал
+
+        val connectivityManager = context.getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+        return connectivityManager.activeNetworkInfo?.isConnected ?: false
     }
 
     companion object {
 
-        private const val INITIAL_PAGE_NUMBER = 0
-        private const val HAS_NEXT_PAGE_DEFAULT = true
+        private const val INITIAL_PAGE_NUMBER = 1
     }
 }

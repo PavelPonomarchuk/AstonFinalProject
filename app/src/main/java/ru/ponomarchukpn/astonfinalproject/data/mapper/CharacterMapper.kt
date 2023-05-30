@@ -40,7 +40,7 @@ class CharacterMapper @Inject constructor() {
         },
         species = dto.species,
         type = dto.type,
-        gender = when(dto.gender) {
+        gender = when (dto.gender) {
             "Female" -> CharacterGender.FEMALE
             "Male" -> CharacterGender.MALE
             "Genderless" -> CharacterGender.GENDERLESS
@@ -55,6 +55,15 @@ class CharacterMapper @Inject constructor() {
         created = dto.created
     )
 
+    fun mapPageDtoToDbModelList(charactersPage: CharactersPageDto, pageNumber: Int) =
+        mutableListOf<CharacterDbModel>().apply {
+            charactersPage.results.forEach { characterJsonObject ->
+                Gson().fromJson(characterJsonObject, CharacterDto::class.java)?.let {
+                    this.add(mapDtoToDbModel(it, pageNumber))
+                }
+            }
+        }.toList()
+
     private fun mapDtoToDbModel(dto: CharacterDto, page: Int) = CharacterDbModel(
         id = dto.id,
         name = dto.name,
@@ -66,7 +75,7 @@ class CharacterMapper @Inject constructor() {
         },
         species = dto.species,
         type = dto.type,
-        gender = when(dto.gender) {
+        gender = when (dto.gender) {
             "Female" -> CharacterGender.FEMALE.ordinal
             "Male" -> CharacterGender.MALE.ordinal
             "Genderless" -> CharacterGender.GENDERLESS.ordinal
@@ -80,5 +89,35 @@ class CharacterMapper @Inject constructor() {
         url = dto.url,
         created = dto.created,
         relatedToPage = page
+    )
+
+    fun mapDbModelsListToEntitiesList(dbModels: List<CharacterDbModel>) = dbModels.map {
+        mapDbModelToEntity(it)
+    }
+
+    private fun mapDbModelToEntity(dbModel: CharacterDbModel) = CharacterEntity(
+        id = dbModel.id,
+        name = dbModel.name,
+        status = when(dbModel.status) {
+            CharacterStatus.ALIVE.ordinal -> CharacterStatus.ALIVE
+            CharacterStatus.DEAD.ordinal -> CharacterStatus.DEAD
+            CharacterStatus.UNKNOWN.ordinal -> CharacterStatus.UNKNOWN
+            else -> throw RuntimeException("Wrong status value: ${dbModel.status}")
+        },
+        species = dbModel.species,
+        type = dbModel.type,
+        gender = when(dbModel.gender) {
+            CharacterGender.FEMALE.ordinal -> CharacterGender.FEMALE
+            CharacterGender.MALE.ordinal -> CharacterGender.MALE
+            CharacterGender.GENDERLESS.ordinal -> CharacterGender.GENDERLESS
+            CharacterGender.UNKNOWN.ordinal -> CharacterGender.UNKNOWN
+            else -> throw RuntimeException("Wrong gender value: ${dbModel.gender}")
+        },
+        originId = dbModel.originId,
+        locationId = dbModel.locationId,
+        imageUrl = dbModel.imageUrl,
+        episodesId = dbModel.episodesId.split(",").map { it.trim().toInt() },
+        url = dbModel.url,
+        created = dbModel.created
     )
 }
