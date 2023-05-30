@@ -1,4 +1,4 @@
-package ru.ponomarchukpn.astonfinalproject.utils
+package ru.ponomarchukpn.astonfinalproject.common
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject

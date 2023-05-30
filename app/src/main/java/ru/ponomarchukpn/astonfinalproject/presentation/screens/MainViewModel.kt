@@ -8,12 +8,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import ru.ponomarchukpn.astonfinalproject.common.MyApp
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharactersPageResponse
 import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetCharactersPageUseCase
+import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
-    //TODO инжектить юзкейсы, и м.б. фабрика для вью модели нужна
+
+    @Inject
+    lateinit var getCharactersPageUseCase: GetCharactersPageUseCase
+
+    private val appComponent by lazy {
+        MyApp.myApp.appComponent
+    }
 
     private val _charactersLiveData = MutableLiveData<List<CharacterEntity>>()
     val charactersLiveData: LiveData<List<CharacterEntity>>
@@ -24,13 +32,17 @@ class MainViewModel : ViewModel() {
     private var pageNumber = INITIAL_PAGE_NUMBER
     private var hasNextPage = HAS_NEXT_PAGE_DEFAULT
 
+    init {
+        appComponent.inject(this)
+    }
+
     fun loadNextPage() {
         if (pageNumber > INITIAL_PAGE_NUMBER && !hasNextPage) {
             return
         }
         pageNumber++
         viewModelScope.launch {
-            GetCharactersPageUseCase().invoke(pageNumber)
+            getCharactersPageUseCase.invoke(pageNumber)
                 .flowOn(Dispatchers.IO)
                 .catch {
                     //TODO нужно для показа сообщения пользователю

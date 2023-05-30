@@ -8,13 +8,13 @@ import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterGender
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterStatus
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharactersPageResponse
-import ru.ponomarchukpn.astonfinalproject.utils.getIdListFromUrls
-import ru.ponomarchukpn.astonfinalproject.utils.getLocationId
+import ru.ponomarchukpn.astonfinalproject.common.getIdListFromUrls
+import ru.ponomarchukpn.astonfinalproject.common.getLocationId
+import javax.inject.Inject
+import javax.inject.Singleton
 
-//TODO сделать обычным классом и поставлять через di
-object CharacterMapper {
-
-    private const val KEY_NEXT = "next"
+@Singleton
+class CharacterMapper @Inject constructor() {
 
     fun mapCharactersPageToResponseEntity(charactersPage: CharactersPageDto): CharactersPageResponse {
         val resultList = mutableListOf<CharacterEntity>()
@@ -80,4 +80,9 @@ object CharacterMapper {
         created = dto.created,
         relatedToPage = page
     )
+
+    companion object {
+
+        private const val KEY_NEXT = "next"
+    }
 }
