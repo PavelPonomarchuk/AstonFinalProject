@@ -15,11 +15,20 @@ class CharactersRepositoryImpl @Inject constructor(
     private val mapper: CharacterMapper
 ) : CharactersRepository {
 
-    override fun getCharactersPage(pageNumber: Int) = flow {
+    private var pageNumber = INITIAL_PAGE_NUMBER
+    private var hasNextPage = HAS_NEXT_PAGE_DEFAULT
+
+    override fun getNextCharactersPage() = flow {
+        if (!hasNextPage) {
+            emit(emptyList())
+        }
         if (isInternetAvailable()) {
-            val dto = apiService.loadCharactersPage(pageNumber)
+            pageNumber++
+            val pageDto = apiService.loadCharactersPage(pageNumber)
             //сохранять данные в БД
-            emit(mapper.mapCharactersPageToResponseEntity(dto))
+            val responseDto = mapper.mapCharactersPageToResponseDto(pageDto)
+            hasNextPage = responseDto.hasNextPage
+            emit(responseDto.characters)
         } else {
             //таким же образом получать из БД и возвращать
         }
@@ -32,5 +41,11 @@ class CharactersRepositoryImpl @Inject constructor(
     private fun isInternetAvailable(): Boolean {
         //TODO
         return true
+    }
+
+    companion object {
+
+        private const val INITIAL_PAGE_NUMBER = 0
+        private const val HAS_NEXT_PAGE_DEFAULT = true
     }
 }

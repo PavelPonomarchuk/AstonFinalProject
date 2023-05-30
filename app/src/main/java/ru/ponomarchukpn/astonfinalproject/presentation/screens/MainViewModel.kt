@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.common.MyApp
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
-import ru.ponomarchukpn.astonfinalproject.domain.entity.CharactersPageResponse
 import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetCharactersPageUseCase
 import javax.inject.Inject
 
@@ -29,20 +28,13 @@ class MainViewModel : ViewModel() {
 
     private val charactersList = mutableListOf<CharacterEntity>()
 
-    private var pageNumber = INITIAL_PAGE_NUMBER
-    private var hasNextPage = HAS_NEXT_PAGE_DEFAULT
-
     init {
         appComponent.inject(this)
     }
 
     fun loadNextPage() {
-        if (pageNumber > INITIAL_PAGE_NUMBER && !hasNextPage) {
-            return
-        }
-        pageNumber++
         viewModelScope.launch {
-            getCharactersPageUseCase.invoke(pageNumber)
+            getCharactersPageUseCase.invoke()
                 .flowOn(Dispatchers.IO)
                 .catch {
                     //TODO нужно для показа сообщения пользователю
@@ -53,15 +45,10 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun processResponse(response: CharactersPageResponse) {
-        hasNextPage = response.hasNextPage
-        charactersList.addAll(response.characters)
-        _charactersLiveData.value = charactersList.toList()
-    }
-
-    companion object {
-
-        private const val INITIAL_PAGE_NUMBER = 0
-        private const val HAS_NEXT_PAGE_DEFAULT = true
+    private fun processResponse(characters: List<CharacterEntity>) {
+        if (characters.isNotEmpty()) {
+            charactersList.addAll(characters)
+            _charactersLiveData.value = charactersList.toList()
+        }
     }
 }
