@@ -14,6 +14,7 @@ class CharactersAdapter : ListAdapter<CharacterEntity, CharactersAdapter.Charact
 ) {
 
     var onListEnded: (() -> Unit)? = null
+    var onCharacterClick: ((CharacterEntity) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharactersViewHolder {
         return LayoutInflater.from(parent.context)
@@ -24,11 +25,16 @@ class CharactersAdapter : ListAdapter<CharacterEntity, CharactersAdapter.Charact
     }
 
     override fun onBindViewHolder(holder: CharactersViewHolder, position: Int) {
-        holder.name.text = getItem(position).name
+        val characterEntity = getItem(position)
+        holder.name.text = characterEntity.name
+        holder.itemView.setOnClickListener {
+            onCharacterClick?.invoke(characterEntity)
+        }
 
         if (position == currentList.size - 1) {
             onListEnded?.invoke()
         }
+
     }
 
     class CharactersViewHolder(itemView: View) : ViewHolder(itemView) {

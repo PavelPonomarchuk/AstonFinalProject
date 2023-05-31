@@ -29,7 +29,7 @@ class CharacterMapper @Inject constructor() {
         return CharactersResponseDto(hasNextPage, resultList)
     }
 
-    private fun mapDtoToEntity(dto: CharacterDto) = CharacterEntity(
+    fun mapDtoToEntity(dto: CharacterDto) = CharacterEntity(
         id = dto.id,
         name = dto.name,
         status = when (dto.status) {
@@ -95,7 +95,7 @@ class CharacterMapper @Inject constructor() {
         mapDbModelToEntity(it)
     }
 
-    private fun mapDbModelToEntity(dbModel: CharacterDbModel) = CharacterEntity(
+    fun mapDbModelToEntity(dbModel: CharacterDbModel) = CharacterEntity(
         id = dbModel.id,
         name = dbModel.name,
         status = when(dbModel.status) {

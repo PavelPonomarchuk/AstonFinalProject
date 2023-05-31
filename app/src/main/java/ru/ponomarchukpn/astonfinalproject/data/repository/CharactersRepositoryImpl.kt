@@ -1,13 +1,11 @@
 package ru.ponomarchukpn.astonfinalproject.data.repository
 
 import android.content.Context
-import android.net.ConnectivityManager
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ru.ponomarchukpn.astonfinalproject.common.isInternetAvailable
 import ru.ponomarchukpn.astonfinalproject.data.database.AppDatabase
 import ru.ponomarchukpn.astonfinalproject.data.mapper.CharacterMapper
 import ru.ponomarchukpn.astonfinalproject.data.network.api.CharactersApiService
-import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.repository.CharactersRepository
 import javax.inject.Inject
 
@@ -21,7 +19,7 @@ class CharactersRepositoryImpl @Inject constructor(
     private var pageNumber = INITIAL_PAGE_NUMBER
 
     override fun getNextCharactersPage() = flow {
-        if (isInternetAvailable()) {
+        if (context.isInternetAvailable()) {
             try {
                 val pageDto = apiService.loadCharactersPage(pageNumber)
                 database.charactersDao().insertCharactersList(
@@ -44,17 +42,14 @@ class CharactersRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCharacter(characterId: Int): Flow<CharacterEntity> {
-        TODO("Not yet implemented")
-    }
-
-    private fun isInternetAvailable(): Boolean {
-        //TODO земенить deprecated функционал
-
-        val connectivityManager = context.getSystemService(
-            Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager
-        return connectivityManager.activeNetworkInfo?.isConnected ?: false
+    override fun getCharacter(characterId: Int) = flow {
+        if (context.isInternetAvailable()) {
+            val characterDto = apiService.loadSingleCharacter(characterId)
+            emit(mapper.mapDtoToEntity(characterDto))
+        } else {
+            val dbModel = database.charactersDao().getCharacter(characterId)
+            emit(mapper.mapDbModelToEntity(dbModel))
+        }
     }
 
     companion object {

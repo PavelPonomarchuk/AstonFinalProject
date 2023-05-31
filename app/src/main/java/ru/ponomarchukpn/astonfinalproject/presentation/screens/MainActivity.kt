@@ -2,9 +2,11 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import ru.ponomarchukpn.astonfinalproject.R
+import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.presentation.adapters.CharactersAdapter
 
 class MainActivity : AppCompatActivity() {
@@ -24,10 +26,26 @@ class MainActivity : AppCompatActivity() {
         adapter.onListEnded = {
             viewModel.loadNextPage()
         }
+        adapter.onCharacterClick = {
+            viewModel.loadCharacter(it.id)
+        }
 
         viewModel.loadNextPage()
         viewModel.charactersLiveData.observe(this) {
             adapter.submitList(it)
         }
+        viewModel.singleCharacterLiveData.observe(this) {
+            it?.getContentIfNotHandled()?.let { entity ->
+                showCharacterToast(entity)
+            }
+        }
+    }
+
+    private fun showCharacterToast(entity: CharacterEntity) {
+        Toast.makeText(
+            this,
+            "Success: ${entity.id}, ${entity.name}",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }

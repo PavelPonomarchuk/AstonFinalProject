@@ -1,5 +1,7 @@
 package ru.ponomarchukpn.astonfinalproject.common
 
+import android.content.Context
+import android.net.ConnectivityManager
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
@@ -19,4 +21,13 @@ fun JsonObject.hasNextPage() = get(KEY_NEXT).asString != null
 
 fun JsonArray.getIdListFromUrls() = toList().map {
     it.asString.split("/").last().toInt()
+}
+
+fun Context.isInternetAvailable(): Boolean {
+    //TODO земенить deprecated функционал
+
+    val connectivityManager = getSystemService(
+        Context.CONNECTIVITY_SERVICE
+    ) as ConnectivityManager
+    return connectivityManager.activeNetworkInfo?.isConnected ?: false
 }
