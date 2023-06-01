@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class CharactersPageDto(
+data class ResponseDto(
     @SerializedName("info")
     @Expose
     val info: JsonObject,

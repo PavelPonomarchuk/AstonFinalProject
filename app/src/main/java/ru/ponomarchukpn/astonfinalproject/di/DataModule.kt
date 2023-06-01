@@ -16,5 +16,9 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun providesCharactersApiService() = ApiFactory.charactersApiService
+    fun provideCharactersApiService() = ApiFactory.charactersApiService
+
+    @Provides
+    @Singleton
+    fun provideLocationsApiService() = ApiFactory.locationsApiService
 }

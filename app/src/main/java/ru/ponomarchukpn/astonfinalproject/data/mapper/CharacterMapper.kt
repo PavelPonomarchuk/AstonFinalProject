@@ -6,7 +6,7 @@ import ru.ponomarchukpn.astonfinalproject.common.getLocationIdFromUrl
 import ru.ponomarchukpn.astonfinalproject.common.hasNextPage
 import ru.ponomarchukpn.astonfinalproject.data.database.CharacterDbModel
 import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharacterDto
-import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharactersPageDto
+import ru.ponomarchukpn.astonfinalproject.data.network.dto.ResponseDto
 import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharactersResponseDto
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterGender
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class CharacterMapper @Inject constructor() {
 
-    fun mapCharactersPageToResponseDto(charactersPage: CharactersPageDto): CharactersResponseDto {
+    fun mapCharactersPageToResponseDto(charactersPage: ResponseDto): CharactersResponseDto {
         val resultList = mutableListOf<CharacterEntity>()
         val hasNextPage = charactersPage.info.hasNextPage()
 
@@ -55,7 +55,7 @@ class CharacterMapper @Inject constructor() {
         created = dto.created
     )
 
-    fun mapPageDtoToDbModelList(charactersPage: CharactersPageDto, pageNumber: Int) =
+    fun mapPageDtoToDbModelList(charactersPage: ResponseDto, pageNumber: Int) =
         mutableListOf<CharacterDbModel>().apply {
             charactersPage.results.forEach { characterJsonObject ->
                 Gson().fromJson(characterJsonObject, CharacterDto::class.java)?.let {

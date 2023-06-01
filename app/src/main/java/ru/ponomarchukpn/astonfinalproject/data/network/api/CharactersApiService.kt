@@ -4,14 +4,14 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharacterDto
-import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharactersPageDto
+import ru.ponomarchukpn.astonfinalproject.data.network.dto.ResponseDto
 
 interface CharactersApiService {
 
     @GET("character")
     suspend fun loadCharactersPage(
         @Query(QUERY_PARAM_PAGE) page: Int
-    ): CharactersPageDto
+    ): ResponseDto
 
     @GET("character/{characterId}")
     suspend fun loadSingleCharacter(

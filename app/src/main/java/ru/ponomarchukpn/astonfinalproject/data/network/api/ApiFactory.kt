@@ -14,4 +14,7 @@ object ApiFactory {
 
     val charactersApiService: CharactersApiService =
         retrofit.create(CharactersApiService::class.java)
+
+    val locationsApiService: LocationsApiService =
+        retrofit.create(LocationsApiService::class.java)
 }
