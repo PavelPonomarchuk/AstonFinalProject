@@ -21,4 +21,12 @@ class DataModule {
     @Provides
     @Singleton
     fun provideLocationsApiService() = ApiFactory.locationsApiService
+
+    @Provides
+    @Singleton
+    fun provideEpisodesDao(context: Context) = AppDatabase.getInstance(context).episodesDao()
+
+    @Provides
+    @Singleton
+    fun provideEpisodesApiService() = ApiFactory.episodesApiService
 }

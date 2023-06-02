@@ -24,13 +24,17 @@ class MainActivity : AppCompatActivity() {
         recycler.adapter = adapter
 
         adapter.onListEnded = {
-            viewModel.loadNextPage()
+            viewModel.loadCharactersPage()
         }
         adapter.onCharacterClick = {
             viewModel.loadCharacter(it.id)
+            viewModel.loadLocation(1)
+            viewModel.loadEpisode(1)
         }
 
-        viewModel.loadNextPage()
+        viewModel.loadCharactersPage()
+        viewModel.loadLocationsPage()
+        viewModel.loadEpisodesPage()
         viewModel.charactersLiveData.observe(this) {
             adapter.submitList(it)
         }
