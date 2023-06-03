@@ -1,19 +1,19 @@
 package ru.ponomarchukpn.astonfinalproject.data.database
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface LocationsDao {
+interface LocationsDao : BaseDao<LocationDbModel> {
 
-    @Query("SELECT * FROM locations WHERE relatedToPage == :page ORDER BY id ASC")
-    suspend fun getLocationsPage(page: Int): List<LocationDbModel>
+    @Query("SELECT * FROM $TABLE_NAME WHERE relatedToPage == :page ORDER BY id ASC")
+    suspend fun getPage(page: Int): List<LocationDbModel>
 
-    @Query("SELECT * FROM locations WHERE id == :locationId LIMIT 1")
-    suspend fun getLocation(locationId: Int): LocationDbModel
+    @Query("SELECT * FROM $TABLE_NAME WHERE id == :itemId LIMIT 1")
+    suspend fun getItem(itemId: Int): LocationDbModel
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLocationsList(locationsList: List<LocationDbModel>)
+    companion object {
+
+        const val TABLE_NAME = "locations"
+    }
 }

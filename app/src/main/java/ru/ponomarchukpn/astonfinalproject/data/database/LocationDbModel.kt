@@ -3,7 +3,7 @@ package ru.ponomarchukpn.astonfinalproject.data.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "locations")
+@Entity(tableName = LocationsDao.TABLE_NAME)
 data class LocationDbModel(
     @PrimaryKey
     val id: Int,

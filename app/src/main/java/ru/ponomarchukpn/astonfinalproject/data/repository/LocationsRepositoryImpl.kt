@@ -3,7 +3,7 @@ package ru.ponomarchukpn.astonfinalproject.data.repository
 import android.content.Context
 import kotlinx.coroutines.flow.flow
 import ru.ponomarchukpn.astonfinalproject.common.isInternetAvailable
-import ru.ponomarchukpn.astonfinalproject.data.database.AppDatabase
+import ru.ponomarchukpn.astonfinalproject.data.database.LocationsDao
 import ru.ponomarchukpn.astonfinalproject.data.mapper.LocationMapper
 import ru.ponomarchukpn.astonfinalproject.data.network.api.LocationsApiService
 import ru.ponomarchukpn.astonfinalproject.domain.repository.LocationsRepository
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class LocationsRepositoryImpl @Inject constructor(
     private val context: Context,
-    private val database: AppDatabase,
+    private val locationsDao: LocationsDao,
     private val apiService: LocationsApiService,
     private val mapper: LocationMapper
 ) : LocationsRepository {
@@ -21,8 +21,8 @@ class LocationsRepositoryImpl @Inject constructor(
     override fun getNextLocationsPage() = flow {
         if (context.isInternetAvailable()) {
             try {
-                val pageDto = apiService.loadLocationsPage(pageNumber)
-                database.locationsDao().insertLocationsList(
+                val pageDto = apiService.loadPage(pageNumber)
+                locationsDao.insertList(
                     mapper.mapPageToDbModelList(pageDto, pageNumber)
                 )
                 pageNumber++
@@ -31,7 +31,7 @@ class LocationsRepositoryImpl @Inject constructor(
                 emit(emptyList())
             }
         } else {
-            val dbModels = database.locationsDao().getLocationsPage(pageNumber)
+            val dbModels = locationsDao.getPage(pageNumber)
             if (dbModels.isNotEmpty()) {
                 pageNumber++
                 emit(mapper.mapDbModelListToEntityList(dbModels))
@@ -43,10 +43,10 @@ class LocationsRepositoryImpl @Inject constructor(
 
     override fun getLocation(locationId: Int) = flow {
         if (context.isInternetAvailable()) {
-            val locationDto = apiService.loadSingleLocation(locationId)
+            val locationDto = apiService.loadItem(locationId)
             emit(mapper.mapDtoToEntity(locationDto))
         } else {
-            val dbModel = database.locationsDao().getLocation(locationId)
+            val dbModel = locationsDao.getItem(locationId)
             emit(mapper.mapDbModelToEntity(dbModel))
         }
     }

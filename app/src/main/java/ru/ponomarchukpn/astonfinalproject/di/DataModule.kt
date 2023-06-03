@@ -10,6 +10,7 @@ import javax.inject.Singleton
 @Module
 class DataModule {
 
+    //TODO убрать БД когда поправлю CharactersRepositoryImpl
     @Provides
     @Singleton
     fun provideDatabase(context: Context) = AppDatabase.getInstance(context)
@@ -17,6 +18,10 @@ class DataModule {
     @Provides
     @Singleton
     fun provideCharactersApiService() = ApiFactory.charactersApiService
+
+    @Provides
+    @Singleton
+    fun provideLocationsDao(context: Context) = AppDatabase.getInstance(context).locationsDao()
 
     @Provides
     @Singleton
