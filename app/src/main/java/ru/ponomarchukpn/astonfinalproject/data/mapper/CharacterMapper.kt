@@ -3,11 +3,9 @@ package ru.ponomarchukpn.astonfinalproject.data.mapper
 import com.google.gson.Gson
 import ru.ponomarchukpn.astonfinalproject.common.getIdListFromUrls
 import ru.ponomarchukpn.astonfinalproject.common.getLocationIdFromUrl
-import ru.ponomarchukpn.astonfinalproject.common.hasNextPage
 import ru.ponomarchukpn.astonfinalproject.data.database.CharacterDbModel
 import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharacterDto
 import ru.ponomarchukpn.astonfinalproject.data.network.dto.ResponseDto
-import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharactersResponseDto
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterGender
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterStatus
@@ -17,17 +15,13 @@ import javax.inject.Singleton
 @Singleton
 class CharacterMapper @Inject constructor() {
 
-    fun mapCharactersPageToResponseDto(charactersPage: ResponseDto): CharactersResponseDto {
-        val resultList = mutableListOf<CharacterEntity>()
-        val hasNextPage = charactersPage.info.hasNextPage()
-
-        charactersPage.results.forEach { characterJsonObject ->
+    fun mapPageToEntitiesList(page: ResponseDto) = mutableListOf<CharacterEntity>().apply {
+        page.results.forEach { characterJsonObject ->
             Gson().fromJson(characterJsonObject, CharacterDto::class.java)?.let {
-                resultList.add(mapDtoToEntity(it))
+                this.add(mapDtoToEntity(it))
             }
         }
-        return CharactersResponseDto(hasNextPage, resultList)
-    }
+    }.toList()
 
     fun mapDtoToEntity(dto: CharacterDto) = CharacterEntity(
         id = dto.id,

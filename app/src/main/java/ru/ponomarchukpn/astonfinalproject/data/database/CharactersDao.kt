@@ -1,19 +1,19 @@
 package ru.ponomarchukpn.astonfinalproject.data.database
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface CharactersDao {
+interface CharactersDao : BaseDao<CharacterDbModel> {
 
-    @Query("SELECT * FROM characters WHERE relatedToPage == :page ORDER BY id ASC")
-    suspend fun getCharactersPage(page: Int): List<CharacterDbModel>
+    @Query("SELECT * FROM $TABLE_NAME WHERE relatedToPage == :page ORDER BY id ASC")
+    suspend fun getPage(page: Int): List<CharacterDbModel>
 
-    @Query("SELECT * FROM characters WHERE id == :characterId LIMIT 1")
-    suspend fun getCharacter(characterId: Int): CharacterDbModel
+    @Query("SELECT * FROM $TABLE_NAME WHERE id == :itemId LIMIT 1")
+    suspend fun getItem(itemId: Int): CharacterDbModel
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCharactersList(charactersList: List<CharacterDbModel>)
+    companion object {
+
+        const val TABLE_NAME = "characters"
+    }
 }

@@ -3,7 +3,7 @@ package ru.ponomarchukpn.astonfinalproject.data.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "characters")
+@Entity(tableName = CharactersDao.TABLE_NAME)
 data class CharacterDbModel(
     @PrimaryKey
     val id: Int,

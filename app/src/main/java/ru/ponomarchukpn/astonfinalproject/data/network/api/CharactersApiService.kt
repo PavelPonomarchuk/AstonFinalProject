@@ -8,19 +8,20 @@ import ru.ponomarchukpn.astonfinalproject.data.network.dto.ResponseDto
 
 interface CharactersApiService {
 
-    @GET("character")
-    suspend fun loadCharactersPage(
+    @GET(ENDPOINT)
+    suspend fun loadPage(
         @Query(QUERY_PARAM_PAGE) page: Int
     ): ResponseDto
 
-    @GET("character/{characterId}")
-    suspend fun loadSingleCharacter(
-        @Path(PATH_CHARACTER_ID) characterId: Int
+    @GET("$ENDPOINT/{$PATH_ITEM_ID}")
+    suspend fun loadItem(
+        @Path(PATH_ITEM_ID) itemId: Int
     ): CharacterDto
 
     companion object {
 
+        private const val ENDPOINT = "character"
         private const val QUERY_PARAM_PAGE = "page"
-        private const val PATH_CHARACTER_ID = "characterId"
+        private const val PATH_ITEM_ID = "itemId"
     }
 }
