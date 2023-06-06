@@ -8,19 +8,18 @@ import ru.ponomarchukpn.astonfinalproject.data.network.dto.ResponseDto
 
 interface LocationsApiService {
 
-    @GET(ENDPOINT)
+    @GET("location")
     suspend fun loadPage(
         @Query(QUERY_PARAM_PAGE) page: Int
     ): ResponseDto
 
-    @GET("$ENDPOINT/{$PATH_ITEM_ID}")
+    @GET("location/{$PATH_ITEM_ID}")
     suspend fun loadItem(
         @Path(PATH_ITEM_ID) itemId: Int
     ): LocationDto
 
     companion object {
 
-        private const val ENDPOINT = "location"
         private const val QUERY_PARAM_PAGE = "page"
         private const val PATH_ITEM_ID = "itemId"
     }

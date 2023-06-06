@@ -1,21 +1,24 @@
 package ru.ponomarchukpn.astonfinalproject.common
 
 import android.app.Application
-import ru.ponomarchukpn.astonfinalproject.di.DaggerApplicationComponent
+import ru.ponomarchukpn.astonfinalproject.di.App
+import ru.ponomarchukpn.astonfinalproject.di.AppComponent
 
-class MyApp : Application() {
+class MyApp : Application(), App {
 
-    val appComponent by lazy {
-        DaggerApplicationComponent.factory().create(this)
-    }
+    private var appComponent: AppComponent? = null
 
     override fun onCreate() {
         super.onCreate()
-        myApp = this
+        appComponent()
     }
 
-    companion object {
+    override fun appComponent() = getAppComponent()
 
-        lateinit var myApp: MyApp
+    private fun getAppComponent(): AppComponent {
+        if (appComponent == null) {
+            appComponent = AppComponent.init(applicationContext)
+        }
+        return appComponent!!
     }
 }

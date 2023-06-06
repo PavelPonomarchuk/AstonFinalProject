@@ -1,7 +1,6 @@
 package ru.ponomarchukpn.astonfinalproject.data.network.dto
 
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -26,10 +25,10 @@ data class CharacterDto(
     val gender: String,
     @SerializedName("origin")
     @Expose
-    val origin: JsonObject,
+    val origin: LocationMinimalDto,
     @SerializedName("location")
     @Expose
-    val location: JsonObject,
+    val location: LocationMinimalDto,
     @SerializedName("image")
     @Expose
     val image: String,

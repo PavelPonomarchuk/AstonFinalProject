@@ -18,7 +18,7 @@ class LocationsRepositoryImpl @Inject constructor(
 
     private var pageNumber = INITIAL_PAGE_NUMBER
 
-    override fun getNextLocationsPage() = flow {
+    override suspend fun getNextLocationsPage() = flow {
         if (context.isInternetAvailable()) {
             try {
                 val pageDto = apiService.loadPage(pageNumber)
@@ -41,7 +41,7 @@ class LocationsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getLocation(locationId: Int) = flow {
+    override suspend fun getLocation(locationId: Int) = flow {
         if (context.isInternetAvailable()) {
             val locationDto = apiService.loadItem(locationId)
             emit(mapper.mapDtoToEntity(locationDto))

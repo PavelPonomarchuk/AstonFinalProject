@@ -6,5 +6,5 @@ class GetSingleLocationUseCase(
     private val repository: LocationsRepository
 ) {
 
-    operator fun invoke(locationId: Int) = repository.getLocation(locationId)
+    suspend operator fun invoke(locationId: Int) = repository.getLocation(locationId)
 }

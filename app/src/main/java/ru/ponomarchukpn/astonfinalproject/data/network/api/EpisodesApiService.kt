@@ -8,19 +8,18 @@ import ru.ponomarchukpn.astonfinalproject.data.network.dto.ResponseDto
 
 interface EpisodesApiService {
 
-    @GET(ENDPOINT)
+    @GET("episode")
     suspend fun loadPage(
         @Query(QUERY_PARAM_PAGE) page: Int
     ): ResponseDto
 
-    @GET("$ENDPOINT/{$PATH_ITEM_ID}")
+    @GET("episode/{$PATH_ITEM_ID}")
     suspend fun loadItem(
         @Path(PATH_ITEM_ID) itemId: Int
     ): EpisodeDto
 
     companion object {
 
-        private const val ENDPOINT = "episode"
         private const val QUERY_PARAM_PAGE = "page"
         private const val PATH_ITEM_ID = "itemId"
     }

@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.ponomarchukpn.astonfinalproject.R
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 
-class CharactersAdapter : ListAdapter<CharacterEntity, CharactersAdapter.CharactersViewHolder>(
+class CharactersAdapter(
+    private val onListEnded: () -> Unit,
+    private val onCharacterClick: (CharacterEntity) -> Unit
+) : ListAdapter<CharacterEntity, CharactersAdapter.CharactersViewHolder>(
     CharactersDiffCallback
 ) {
-
-    var onListEnded: (() -> Unit)? = null
-    var onCharacterClick: ((CharacterEntity) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharactersViewHolder {
         return LayoutInflater.from(parent.context)
@@ -28,13 +28,12 @@ class CharactersAdapter : ListAdapter<CharacterEntity, CharactersAdapter.Charact
         val characterEntity = getItem(position)
         holder.name.text = characterEntity.name
         holder.itemView.setOnClickListener {
-            onCharacterClick?.invoke(characterEntity)
+            onCharacterClick.invoke(characterEntity)
         }
 
         if (position == currentList.size - 1) {
-            onListEnded?.invoke()
+            onListEnded.invoke()
         }
-
     }
 
     class CharactersViewHolder(itemView: View) : ViewHolder(itemView) {

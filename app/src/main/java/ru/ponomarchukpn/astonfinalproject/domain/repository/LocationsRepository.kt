@@ -5,7 +5,7 @@ import ru.ponomarchukpn.astonfinalproject.domain.entity.LocationEntity
 
 interface LocationsRepository {
 
-    fun getNextLocationsPage(): Flow<List<LocationEntity>>
+    suspend fun getNextLocationsPage(): Flow<List<LocationEntity>>
 
-    fun getLocation(locationId: Int): Flow<LocationEntity>
+    suspend fun getLocation(locationId: Int): Flow<LocationEntity>
 }

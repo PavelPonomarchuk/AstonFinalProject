@@ -6,5 +6,5 @@ class GetCharactersPageUseCase(
     private val repository: CharactersRepository
 ) {
 
-    operator fun invoke() = repository.getNextCharactersPage()
+    suspend operator fun invoke() = repository.getNextCharactersPage()
 }

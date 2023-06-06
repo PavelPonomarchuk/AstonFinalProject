@@ -2,7 +2,7 @@ package ru.ponomarchukpn.astonfinalproject.data.mapper
 
 import com.google.gson.Gson
 import ru.ponomarchukpn.astonfinalproject.common.getIdListFromUrls
-import ru.ponomarchukpn.astonfinalproject.common.getLocationIdFromUrl
+import ru.ponomarchukpn.astonfinalproject.common.idUrlEndsWith
 import ru.ponomarchukpn.astonfinalproject.data.database.CharacterDbModel
 import ru.ponomarchukpn.astonfinalproject.data.network.dto.CharacterDto
 import ru.ponomarchukpn.astonfinalproject.data.network.dto.ResponseDto
@@ -41,8 +41,8 @@ class CharacterMapper @Inject constructor() {
             "unknown" -> CharacterGender.UNKNOWN
             else -> throw RuntimeException("Wrong gender value: ${dto.gender}")
         },
-        originId = dto.origin.getLocationIdFromUrl(),
-        locationId = dto.location.getLocationIdFromUrl(),
+        originId = dto.origin.url.idUrlEndsWith(),
+        locationId = dto.location.url.idUrlEndsWith(),
         imageUrl = dto.image,
         episodesId = dto.episode.getIdListFromUrls(),
         url = dto.url,
@@ -76,8 +76,8 @@ class CharacterMapper @Inject constructor() {
             "unknown" -> CharacterGender.UNKNOWN.ordinal
             else -> throw RuntimeException("Wrong gender value: ${dto.gender}")
         },
-        originId = dto.origin.getLocationIdFromUrl(),
-        locationId = dto.location.getLocationIdFromUrl(),
+        originId = dto.origin.url.idUrlEndsWith(),
+        locationId = dto.location.url.idUrlEndsWith(),
         imageUrl = dto.image,
         episodesId = dto.episode.getIdListFromUrls().joinToString(),
         url = dto.url,

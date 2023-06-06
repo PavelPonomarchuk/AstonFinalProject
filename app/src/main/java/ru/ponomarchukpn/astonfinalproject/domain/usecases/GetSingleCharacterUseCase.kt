@@ -6,5 +6,5 @@ class GetSingleCharacterUseCase(
     private val repository: CharactersRepository
 ) {
 
-    operator fun invoke(characterId: Int) = repository.getCharacter(characterId)
+    suspend operator fun invoke(characterId: Int) = repository.getCharacter(characterId)
 }

@@ -5,7 +5,7 @@ import ru.ponomarchukpn.astonfinalproject.domain.entity.EpisodeEntity
 
 interface EpisodesRepository {
 
-    fun getNextEpisodesPage(): Flow<List<EpisodeEntity>>
+    suspend fun getNextEpisodesPage(): Flow<List<EpisodeEntity>>
 
-    fun getEpisode(episodeId: Int): Flow<EpisodeEntity>
+    suspend fun getEpisode(episodeId: Int): Flow<EpisodeEntity>
 }

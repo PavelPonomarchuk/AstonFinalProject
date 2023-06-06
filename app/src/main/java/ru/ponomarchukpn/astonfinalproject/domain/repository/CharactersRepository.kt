@@ -5,7 +5,7 @@ import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 
 interface CharactersRepository {
 
-    fun getNextCharactersPage(): Flow<List<CharacterEntity>>
+    suspend fun getNextCharactersPage(): Flow<List<CharacterEntity>>
 
-    fun getCharacter(characterId: Int): Flow<CharacterEntity>
+    suspend fun getCharacter(characterId: Int): Flow<CharacterEntity>
 }

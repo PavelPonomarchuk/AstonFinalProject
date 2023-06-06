@@ -6,5 +6,5 @@ class GetSingleEpisodeUseCase(
     private val repository: EpisodesRepository
 ) {
 
-    operator fun invoke(episodeId: Int) = repository.getEpisode(episodeId)
+    suspend operator fun invoke(episodeId: Int) = repository.getEpisode(episodeId)
 }

@@ -6,5 +6,5 @@ class GetEpisodesPageUseCase(
     private val repository: EpisodesRepository
 ) {
 
-    operator fun invoke() = repository.getNextEpisodesPage()
+    suspend operator fun invoke() = repository.getNextEpisodesPage()
 }

@@ -6,5 +6,5 @@ class GetLocationsPageUseCase(
     private val repository: LocationsRepository
 ) {
 
-    operator fun invoke() = repository.getNextLocationsPage()
+    suspend operator fun invoke() = repository.getNextLocationsPage()
 }

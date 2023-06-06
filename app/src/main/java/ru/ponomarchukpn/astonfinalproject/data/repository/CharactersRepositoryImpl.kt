@@ -18,7 +18,7 @@ class CharactersRepositoryImpl @Inject constructor(
 
     private var pageNumber = INITIAL_PAGE_NUMBER
 
-    override fun getNextCharactersPage() = flow {
+    override suspend fun getNextCharactersPage() = flow {
         if (context.isInternetAvailable()) {
             try {
                 val pageDto = apiService.loadPage(pageNumber)
@@ -41,7 +41,7 @@ class CharactersRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCharacter(characterId: Int) = flow {
+    override suspend fun getCharacter(characterId: Int) = flow {
         if (context.isInternetAvailable()) {
             val characterDto = apiService.loadItem(characterId)
             emit(mapper.mapDtoToEntity(characterDto))

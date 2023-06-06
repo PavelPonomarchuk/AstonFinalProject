@@ -1,4 +1,4 @@
-package ru.ponomarchukpn.astonfinalproject.presentation.screens
+package ru.ponomarchukpn.astonfinalproject.presentation.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import ru.ponomarchukpn.astonfinalproject.common.MyApp
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.EpisodeEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.LocationEntity
@@ -19,31 +18,17 @@ import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetLocationsPageUseCas
 import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetSingleCharacterUseCase
 import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetSingleEpisodeUseCase
 import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetSingleLocationUseCase
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.EventWrapper
 import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
-
-    @Inject
-    lateinit var getCharactersPageUseCase: GetCharactersPageUseCase
-
-    @Inject
-    lateinit var getSingleCharacterUseCase: GetSingleCharacterUseCase
-
-    @Inject
-    lateinit var getLocationsPageUseCase: GetLocationsPageUseCase
-
-    @Inject
-    lateinit var getSingleLocationUseCase: GetSingleLocationUseCase
-
-    @Inject
-    lateinit var getEpisodesPageUseCase: GetEpisodesPageUseCase
-
-    @Inject
-    lateinit var getSingleEpisodeUseCase: GetSingleEpisodeUseCase
-
-    private val appComponent by lazy {
-        MyApp.myApp.appComponent
-    }
+class MainViewModel @Inject constructor(
+    private val getCharactersPageUseCase: GetCharactersPageUseCase,
+    private val getSingleCharacterUseCase: GetSingleCharacterUseCase,
+    private val getLocationsPageUseCase: GetLocationsPageUseCase,
+    private val getSingleLocationUseCase: GetSingleLocationUseCase,
+    private val getEpisodesPageUseCase: GetEpisodesPageUseCase,
+    private val getSingleEpisodeUseCase: GetSingleEpisodeUseCase
+) : ViewModel() {
 
     private val _charactersLiveData = MutableLiveData<List<CharacterEntity>>()
     val charactersLiveData: LiveData<List<CharacterEntity>>
@@ -55,16 +40,12 @@ class MainViewModel : ViewModel() {
 
     private val charactersList = mutableListOf<CharacterEntity>()
 
-    init {
-        appComponent.inject(this)
-    }
-
     fun loadCharactersPage() {
         viewModelScope.launch {
             getCharactersPageUseCase.invoke()
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    //TODO нужно для показа сообщения пользователю
+
                 }
                 .collect {
                     processCharactersPageResponse(it)
@@ -77,7 +58,7 @@ class MainViewModel : ViewModel() {
             getSingleCharacterUseCase.invoke(characterId)
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    //TODO нужно для показа сообщения пользователю
+
                 }
                 .collect {
                     processCharacterResponse(it)
@@ -101,7 +82,7 @@ class MainViewModel : ViewModel() {
             getLocationsPageUseCase.invoke()
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    //TODO нужно для показа сообщения пользователю
+
                 }
                 .collect {
                     processLocationsPageResponse(it)
@@ -114,7 +95,7 @@ class MainViewModel : ViewModel() {
             getSingleLocationUseCase.invoke(locationId)
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    //TODO нужно для показа сообщения пользователю
+
                 }
                 .collect {
                     processLocationResponse(it)
@@ -135,7 +116,7 @@ class MainViewModel : ViewModel() {
             getEpisodesPageUseCase.invoke()
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    //TODO нужно для показа сообщения пользователю
+
                 }
                 .collect {
                     processEpisodesPageResponse(it)
@@ -148,7 +129,7 @@ class MainViewModel : ViewModel() {
             getSingleEpisodeUseCase.invoke(episodeId)
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    //TODO нужно для показа сообщения пользователю
+
                 }
                 .collect {
                     processEpisodeResponse(it)

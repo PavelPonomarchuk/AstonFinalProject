@@ -18,7 +18,7 @@ class EpisodesRepositoryImpl @Inject constructor(
 
     private var pageNumber = INITIAL_PAGE_NUMBER
 
-    override fun getNextEpisodesPage() = flow {
+    override suspend fun getNextEpisodesPage() = flow {
         if (context.isInternetAvailable()) {
             try {
                 val pageDto = apiService.loadPage(pageNumber)
@@ -41,7 +41,7 @@ class EpisodesRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getEpisode(episodeId: Int) = flow {
+    override suspend fun getEpisode(episodeId: Int) = flow {
         if (context.isInternetAvailable()) {
             val episodeDto = apiService.loadItem(episodeId)
             emit(mapper.mapDtoToEntity(episodeDto))
