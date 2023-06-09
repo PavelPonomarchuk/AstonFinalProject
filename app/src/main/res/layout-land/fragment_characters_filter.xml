@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/characters_filter_back"
+        android:layout_width="@dimen/app_button_back_size"
+        android:layout_height="@dimen/app_button_back_size"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:background="@drawable/colored_button_oval_ripple"
+        android:contentDescription="@string/description_button_back"
+        android:src="@drawable/ic_back"
+        app:layout_constraintBottom_toTopOf="@id/characters_filter_guideline_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/characters_filter_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="@string/header_filter_characters"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_header_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/characters_filter_guideline_header"
+        app:layout_constraintEnd_toEndOf="@id/characters_filter_guideline_center"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_back"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/characters_filter_guideline_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="@dimen/app_guideline_header_begin" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/characters_filter_guideline_labels"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.12" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/characters_filter_guideline_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/characters_filter_guideline_labels2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.62" />
+
+    <TextView
+        android:id="@+id/characters_filter_name_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:text="@string/label_name"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/characters_filter_edit_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/characters_filter_edit_name" />
+
+    <EditText
+        android:id="@+id/characters_filter_edit_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:hint="@string/hint_enter_characters_name"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="@id/characters_filter_guideline_center"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_labels"
+        app:layout_constraintTop_toBottomOf="@id/characters_filter_guideline_header" />
+
+    <TextView
+        android:id="@+id/characters_filter_status_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:text="@string/label_status"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/characters_filter_status_spinner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/characters_filter_status_spinner" />
+
+    <Spinner
+        android:id="@+id/characters_filter_status_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:entries="@array/character_status_selection"
+        android:paddingVertical="@dimen/app_base_padding"
+        app:layout_constraintEnd_toEndOf="@id/characters_filter_guideline_center"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_labels"
+        app:layout_constraintTop_toBottomOf="@id/characters_filter_edit_name" />
+
+    <TextView
+        android:id="@+id/characters_filter_species_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:text="@string/label_species"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/characters_filter_edit_species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/characters_filter_edit_species" />
+
+    <EditText
+        android:id="@+id/characters_filter_edit_species"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:hint="@string/hint_enter_characters_species"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="@id/characters_filter_guideline_center"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_labels"
+        app:layout_constraintTop_toBottomOf="@id/characters_filter_status_spinner" />
+
+    <TextView
+        android:id="@+id/characters_filter_type_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:text="@string/label_type"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/characters_filter_edit_type"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_center"
+        app:layout_constraintTop_toTopOf="@id/characters_filter_edit_type" />
+
+    <EditText
+        android:id="@+id/characters_filter_edit_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:hint="@string/hint_enter_characters_type"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_labels2"
+        app:layout_constraintTop_toBottomOf="@id/characters_filter_guideline_header" />
+
+    <TextView
+        android:id="@+id/characters_filter_gender_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:text="@string/label_gender"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/characters_filter_gender_spinner"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_center"
+        app:layout_constraintTop_toTopOf="@id/characters_filter_gender_spinner" />
+
+    <Spinner
+        android:id="@+id/characters_filter_gender_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:entries="@array/character_gender_selection"
+        android:paddingVertical="@dimen/app_base_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_labels2"
+        app:layout_constraintTop_toBottomOf="@id/characters_filter_edit_type" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/characters_filter_apply"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:background="@drawable/colored_button_ripple"
+        android:minHeight="0dp"
+        android:paddingVertical="@dimen/app_button_padding_vertical"
+        android:text="@string/app_apply_filter_label"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toTopOf="@id/characters_filter_guideline_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/characters_filter_guideline_center"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

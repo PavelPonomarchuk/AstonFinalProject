@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/character_details_back"
+        android:layout_width="@dimen/app_button_back_size"
+        android:layout_height="@dimen/app_button_back_size"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:background="@drawable/colored_button_oval_ripple"
+        android:contentDescription="@string/description_button_back"
+        android:src="@drawable/ic_back"
+        app:layout_constraintBottom_toTopOf="@id/character_details_guideline_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/character_details_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toTopOf="@id/character_details_guideline_header"
+        app:layout_constraintStart_toEndOf="@id/character_details_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Man Painted Silver Who Makes Robot Noises" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/character_details_guideline_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="@dimen/app_guideline_header_begin" />
+
+    <ScrollView
+        android:id="@+id/character_details_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/character_details_guideline_center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_details_guideline_header">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/character_details_image"
+                android:layout_width="@dimen/character_details_image_size"
+                android:layout_height="@dimen/character_details_image_size"
+                android:layout_marginStart="@dimen/app_margin_base"
+                android:contentDescription="@string/description_character_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@mipmap/ic_launcher" />
+
+            <TextView
+                android:id="@+id/character_details_status_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/app_margin_base"
+                android:layout_marginTop="@dimen/app_margin_base"
+                android:text="@string/label_status"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintStart_toEndOf="@id/character_details_image"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/character_details_status_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/app_margin_base"
+                android:layout_marginTop="@dimen/app_margin_base"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/character_details_status_label"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Alive" />
+
+            <TextView
+                android:id="@+id/character_details_species_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/app_margin_base"
+                android:text="@string/label_species"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintStart_toEndOf="@id/character_details_image"
+                app:layout_constraintTop_toBottomOf="@id/character_details_status_label" />
+
+            <TextView
+                android:id="@+id/character_details_species_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/app_margin_base"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/character_details_species_label"
+                app:layout_constraintTop_toBottomOf="@id/character_details_status_label"
+                tools:text="Human" />
+
+            <TextView
+                android:id="@+id/character_details_type_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/app_margin_base"
+                android:text="@string/label_type"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintStart_toEndOf="@id/character_details_image"
+                app:layout_constraintTop_toBottomOf="@id/character_details_species_label" />
+
+            <TextView
+                android:id="@+id/character_details_type_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/app_margin_base"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/character_details_type_label"
+                app:layout_constraintTop_toBottomOf="@id/character_details_species_label"
+                tools:text="Undefined" />
+
+            <TextView
+                android:id="@+id/character_details_gender_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/app_margin_base"
+                android:text="@string/label_gender"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintStart_toEndOf="@id/character_details_image"
+                app:layout_constraintTop_toBottomOf="@id/character_details_type_label" />
+
+            <TextView
+                android:id="@+id/character_details_gender_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/app_margin_base"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/app_base_text_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/character_details_gender_label"
+                app:layout_constraintTop_toBottomOf="@id/character_details_type_label"
+                tools:text="Male" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/character_details_origin"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/character_details_card_height"
+                android:layout_marginHorizontal="@dimen/app_margin_base"
+                android:layout_marginTop="@dimen/app_margin_base"
+                app:cardBackgroundColor="@color/app_yellow_light"
+                app:cardCornerRadius="@dimen/app_corners_radius"
+                app:cardElevation="@dimen/app_card_elevation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/character_details_image">
+
+                <TextView
+                    android:id="@+id/character_details_tv_origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="@dimen/app_margin_base"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/app_base_text_size"
+                    android:textStyle="bold"
+                    tools:text="Origin: Earth" />
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/character_details_location"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/character_details_card_height"
+                android:layout_marginHorizontal="@dimen/app_margin_base"
+                android:layout_marginTop="@dimen/app_margin_base"
+                app:cardBackgroundColor="@color/app_yellow_light"
+                app:cardCornerRadius="@dimen/app_corners_radius"
+                app:cardElevation="@dimen/app_card_elevation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/character_details_origin">
+
+                <TextView
+                    android:id="@+id/character_details_tv_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="@dimen/app_margin_base"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/app_base_text_size"
+                    android:textStyle="bold"
+                    tools:text="Location: Earth" />
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/character_details_guideline_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/character_details_recycler_episodes"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_details_guideline_center"
+        tools:listitem="@layout/item_episode" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

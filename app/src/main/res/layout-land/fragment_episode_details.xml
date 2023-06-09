@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/episode_details_back"
+        android:layout_width="@dimen/app_button_back_size"
+        android:layout_height="@dimen/app_button_back_size"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:background="@drawable/colored_button_oval_ripple"
+        android:contentDescription="@string/description_button_back"
+        android:src="@drawable/ic_back"
+        app:layout_constraintBottom_toTopOf="@id/episode_details_guideline_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/episode_details_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintBottom_toTopOf="@id/episode_details_guideline_header"
+        app:layout_constraintStart_toEndOf="@id/episode_details_back"
+        app:layout_constraintEnd_toStartOf="@id/episode_details_guideline_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="The Ricklantis Mixup" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/episode_details_guideline_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="@dimen/app_guideline_header_begin" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/episode_details_guideline_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/episode_details_air_date_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:text="@string/label_air_date"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintStart_toEndOf="@id/episode_details_guideline_vertical"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/episode_details_air_date_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/episode_details_air_date_label"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="September 10, 2017" />
+
+    <TextView
+        android:id="@+id/episode_details_code_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:text="@string/label_code"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintStart_toEndOf="@id/episode_details_guideline_vertical"
+        app:layout_constraintTop_toBottomOf="@id/episode_details_air_date_text" />
+
+    <TextView
+        android:id="@+id/episode_details_code_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_base_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/episode_details_code_label"
+        app:layout_constraintTop_toBottomOf="@id/episode_details_air_date_text"
+        tools:text="S03E07" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/episode_details_recycler_characters"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/app_margin_base"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_details_code_text"
+        tools:listitem="@layout/item_character" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

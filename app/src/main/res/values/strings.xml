@@ -1,3 +1,44 @@
 <resources>
-    <string name="app_name">AstonFinalProject</string>
+    <string name="app_name">RickAndMorty</string>
+    <string name="menu_label_characters">Characters</string>
+    <string name="menu_label_locations">Locations</string>
+    <string name="menu_label_episodes">Episodes</string>
+    <string name="description_character_image">Character image</string>
+    <string name="app_filter_label">Filter</string>
+    <string name="app_clear_label">Clear</string>
+    <string name="description_button_back">Button back</string>
+    <string name="label_status">Status:</string>
+    <string name="label_species">Species:</string>
+    <string name="label_type">Type:</string>
+    <string name="label_gender">Gender:</string>
+    <string name="label_origin">Origin:</string>
+    <string name="label_dimension">Dimension:</string>
+    <string name="label_air_date">Air date:</string>
+    <string name="label_code">Code:</string>
+    <string name="header_filter_characters">Filter characters</string>
+    <string name="label_name">Name:</string>
+    <string name="app_apply_filter_label">Apply filter</string>
+    <string name="hint_enter_characters_name">Enter characters name</string>
+    <string name="hint_enter_characters_species">Enter characters species</string>
+    <string name="hint_enter_characters_type">Enter characters type</string>
+    <string name="header_filter_locations">Filter locations</string>
+    <string name="hint_enter_locations_name">Enter locations name</string>
+    <string name="hint_enter_locations_type">Enter locations type</string>
+    <string name="hint_enter_locations_dimension">Enter locations dimension</string>
+    <string name="header_filter_episodes">Filter episodes</string>
+    <string name="hint_enter_episodes_name">Enter episodes name</string>
+    <string name="hint_enter_episodes_code">Enter episodes code</string>
+    <string-array name="character_status_selection">
+        <item>Not selected</item>
+        <item>Alive</item>
+        <item>Dead</item>
+        <item>Unknown</item>
+    </string-array>
+    <string-array name="character_gender_selection">
+        <item>Not selected</item>
+        <item>Female</item>
+        <item>Male</item>
+        <item>Genderless</item>
+        <item>Unknown</item>
+    </string-array>
 </resources>
