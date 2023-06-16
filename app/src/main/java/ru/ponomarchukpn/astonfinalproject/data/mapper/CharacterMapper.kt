@@ -23,6 +23,8 @@ class CharacterMapper @Inject constructor() {
         }
     }.toList()
 
+    fun mapDtoListToEntityList(dtoList: List<CharacterDto>) = dtoList.map { mapDtoToEntity(it) }
+
     fun mapDtoToEntity(dto: CharacterDto) = CharacterEntity(
         id = dto.id,
         name = dto.name,

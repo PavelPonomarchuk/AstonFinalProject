@@ -40,31 +40,31 @@ class MainViewModel @Inject constructor(
 
     private val charactersList = mutableListOf<CharacterEntity>()
 
-    fun loadCharactersPage() {
-        viewModelScope.launch {
-            getCharactersPageUseCase.invoke()
-                .flowOn(Dispatchers.IO)
-                .catch {
-
-                }
-                .collect {
-                    processCharactersPageResponse(it)
-                }
-        }
-    }
-
-    fun loadCharacter(characterId: Int) {
-        viewModelScope.launch {
-            getSingleCharacterUseCase.invoke(characterId)
-                .flowOn(Dispatchers.IO)
-                .catch {
-
-                }
-                .collect {
-                    processCharacterResponse(it)
-                }
-        }
-    }
+//    fun loadCharactersPage() {
+//        viewModelScope.launch {
+//            getCharactersPageUseCase.invoke()
+//                .flowOn(Dispatchers.IO)
+//                .catch {
+//
+//                }
+//                .collect {
+//                    processCharactersPageResponse(it)
+//                }
+//        }
+//    }
+//
+//    fun loadCharacter(characterId: Int) {
+//        viewModelScope.launch {
+//            getSingleCharacterUseCase.invoke(characterId)
+//                .flowOn(Dispatchers.IO)
+//                .catch {
+//
+//                }
+//                .collect {
+//                    processCharacterResponse(it)
+//                }
+//        }
+//    }
 
     private fun processCharacterResponse(character: CharacterEntity) {
         _singleCharacterLiveData.value = EventWrapper(character)
@@ -77,31 +77,31 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun loadLocationsPage() {
-        viewModelScope.launch {
-            getLocationsPageUseCase.invoke()
-                .flowOn(Dispatchers.IO)
-                .catch {
-
-                }
-                .collect {
-                    processLocationsPageResponse(it)
-                }
-        }
-    }
-
-    fun loadLocation(locationId: Int) {
-        viewModelScope.launch {
-            getSingleLocationUseCase.invoke(locationId)
-                .flowOn(Dispatchers.IO)
-                .catch {
-
-                }
-                .collect {
-                    processLocationResponse(it)
-                }
-        }
-    }
+//    fun loadLocationsPage() {
+//        viewModelScope.launch {
+//            getLocationsPageUseCase.invoke()
+//                .flowOn(Dispatchers.IO)
+//                .catch {
+//
+//                }
+//                .collect {
+//                    processLocationsPageResponse(it)
+//                }
+//        }
+//    }
+//
+//    fun loadLocation(locationId: Int) {
+//        viewModelScope.launch {
+//            getSingleLocationUseCase.invoke(locationId)
+//                .flowOn(Dispatchers.IO)
+//                .catch {
+//
+//                }
+//                .collect {
+//                    processLocationResponse(it)
+//                }
+//        }
+//    }
 
     private fun processLocationResponse(location: LocationEntity) {
         Log.d("downloading_test", location.toString())
@@ -111,31 +111,31 @@ class MainViewModel @Inject constructor(
         Log.d("downloading_test", locations.toString())
     }
 
-    fun loadEpisodesPage() {
-        viewModelScope.launch {
-            getEpisodesPageUseCase.invoke()
-                .flowOn(Dispatchers.IO)
-                .catch {
-
-                }
-                .collect {
-                    processEpisodesPageResponse(it)
-                }
-        }
-    }
-
-    fun loadEpisode(episodeId: Int) {
-        viewModelScope.launch {
-            getSingleEpisodeUseCase.invoke(episodeId)
-                .flowOn(Dispatchers.IO)
-                .catch {
-
-                }
-                .collect {
-                    processEpisodeResponse(it)
-                }
-        }
-    }
+//    fun loadEpisodesPage() {
+//        viewModelScope.launch {
+//            getEpisodesPageUseCase.invoke()
+//                .flowOn(Dispatchers.IO)
+//                .catch {
+//
+//                }
+//                .collect {
+//                    processEpisodesPageResponse(it)
+//                }
+//        }
+//    }
+//
+//    fun loadEpisode(episodeId: Int) {
+//        viewModelScope.launch {
+//            getSingleEpisodeUseCase.invoke(episodeId)
+//                .flowOn(Dispatchers.IO)
+//                .catch {
+//
+//                }
+//                .collect {
+//                    processEpisodeResponse(it)
+//                }
+//        }
+//    }
 
     private fun processEpisodeResponse(episode: EpisodeEntity) {
         Log.d("downloading_test", episode.toString())

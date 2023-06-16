@@ -15,49 +15,55 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory
-
-    private val appComponent by lazy {
-        (application as MyApp).appComponent()
-    }
-
-    private val viewModel by lazy {
-        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
-    }
+//    @Inject
+//    lateinit var viewModelFactory: ViewModelFactory
+//
+//    private val appComponent by lazy {
+//        (application as MyApp).appComponent()
+//    }
+//
+//    private val viewModel by lazy {
+//        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        appComponent.inject(this)
+//        appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val recycler = findViewById<RecyclerView>(R.id.main_test_recycler)
-        val adapter = CharactersAdapter(
-            onListEnded = {
-                viewModel.loadCharactersPage()
-            },
-            onCharacterClick = {
-                viewModel.loadCharacter(it.id)
-            }
-        )
-        recycler.adapter = adapter
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, HostFragment.newInstance())
+                .commit()
+        }
 
-        viewModel.loadCharactersPage()
-        viewModel.charactersLiveData.observe(this) {
-            adapter.submitList(it)
-        }
-        viewModel.singleCharacterLiveData.observe(this) {
-            it?.getContentIfNotHandled()?.let { entity ->
-                showCharacterToast(entity)
-            }
-        }
+//        val recycler = findViewById<RecyclerView>(R.id.main_test_recycler)
+//        val adapter = CharactersAdapter(
+//            onListEnded = {
+//                viewModel.loadCharactersPage()
+//            },
+//            onCharacterClick = {
+//                viewModel.loadCharacter(it.id)
+//            }
+//        )
+//        recycler.adapter = adapter
+//
+//        viewModel.loadCharactersPage()
+//        viewModel.charactersLiveData.observe(this) {
+//            adapter.submitList(it)
+//        }
+//        viewModel.singleCharacterLiveData.observe(this) {
+//            it?.getContentIfNotHandled()?.let { entity ->
+//                showCharacterToast(entity)
+//            }
+//        }
     }
 
-    private fun showCharacterToast(entity: CharacterEntity) {
-        Toast.makeText(
-            this,
-            "Success: ${entity.id}, ${entity.name}",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
+//    private fun showCharacterToast(entity: CharacterEntity) {
+//        Toast.makeText(
+//            this,
+//            "Success: ${entity.id}, ${entity.name}",
+//            Toast.LENGTH_SHORT
+//        ).show()
+//    }
 }

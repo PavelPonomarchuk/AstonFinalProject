@@ -12,6 +12,9 @@ interface CharactersDao : BaseDao<CharacterDbModel> {
     @Query("SELECT * FROM $TABLE_NAME WHERE id == :itemId LIMIT 1")
     suspend fun getItem(itemId: Int): CharacterDbModel
 
+    @Query("SELECT * FROM $TABLE_NAME WHERE id IN (:ids)")
+    suspend fun getItemsByIds(ids: List<Int>): List<CharacterDbModel>
+
     companion object {
 
         const val TABLE_NAME = "characters"

@@ -20,6 +20,8 @@ class EpisodeMapper @Inject constructor() {
         }
     }.toList()
 
+    fun mapDtoListToEntityList(dtoList: List<EpisodeDto>) = dtoList.map { mapDtoToEntity(it) }
+
     fun mapDtoToEntity(dto: EpisodeDto) = EpisodeEntity(
         id = dto.id,
         name = dto.name,

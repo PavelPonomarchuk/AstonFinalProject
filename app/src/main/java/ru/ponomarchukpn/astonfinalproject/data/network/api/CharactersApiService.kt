@@ -18,9 +18,15 @@ interface CharactersApiService {
         @Path(PATH_ITEM_ID) itemId: Int
     ): CharacterDto
 
+    @GET("character/{${PATH_ITEM_IDS_STRING}}")
+    suspend fun loadItemsByIds(
+        @Path(PATH_ITEM_IDS_STRING) itemIds: String
+    ): List<CharacterDto>
+
     companion object {
 
         private const val QUERY_PARAM_PAGE = "page"
         private const val PATH_ITEM_ID = "itemId"
+        private const val PATH_ITEM_IDS_STRING = "itemIdsString"
     }
 }

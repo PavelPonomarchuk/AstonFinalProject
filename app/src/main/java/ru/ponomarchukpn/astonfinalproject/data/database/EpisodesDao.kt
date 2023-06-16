@@ -12,6 +12,9 @@ interface EpisodesDao : BaseDao<EpisodeDbModel> {
     @Query("SELECT * FROM $TABLE_NAME WHERE id == :itemId LIMIT 1")
     suspend fun getItem(itemId: Int): EpisodeDbModel
 
+    @Query("SELECT * FROM $TABLE_NAME WHERE id IN (:ids)")
+    suspend fun getItemsByIds(ids: List<Int>): List<EpisodeDbModel>
+
     companion object {
 
         const val TABLE_NAME = "episodes"

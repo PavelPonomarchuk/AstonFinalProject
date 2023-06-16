@@ -3,6 +3,16 @@ package ru.ponomarchukpn.astonfinalproject.di
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.CharacterDetailsFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.CharactersFilterFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.CharactersFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.EpisodeDetailsFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.EpisodesFilterFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.EpisodesFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.HostFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationDetailsFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationsFilterFragment
+import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationsFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.MainActivity
 import javax.inject.Singleton
 
@@ -17,7 +27,18 @@ import javax.inject.Singleton
 )
 interface AppComponent {
 
-    fun inject(mainActivity: MainActivity)
+    fun inject(mainActivity: MainActivity) //TODO м.б. убрать
+
+    fun inject(hostFragment: HostFragment)
+    fun inject(charactersFragment: CharactersFragment)
+    fun inject(characterDetailsFragment: CharacterDetailsFragment)
+    fun inject(charactersFilterFragment: CharactersFilterFragment)
+    fun inject(locationsFragment: LocationsFragment)
+    fun inject(locationDetailsFragment: LocationDetailsFragment)
+    fun inject(locationsFilterFragment: LocationsFilterFragment)
+    fun inject(episodesFragment: EpisodesFragment)
+    fun inject(episodeDetailsFragment: EpisodeDetailsFragment)
+    fun inject(episodesFilterFragment: EpisodesFilterFragment)
 
     companion object {
 
