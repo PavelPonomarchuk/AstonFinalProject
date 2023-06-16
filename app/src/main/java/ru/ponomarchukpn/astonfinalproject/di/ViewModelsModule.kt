@@ -11,7 +11,6 @@ import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.CharactersViewM
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.EpisodeDetailsViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.EpisodesFilterViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.EpisodesViewModel
-import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.HostViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.LocationDetailsViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.LocationsFilterViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.LocationsViewModel
@@ -33,11 +32,6 @@ interface ViewModelsModule {
     @IntoMap
     @ViewModelKey(MainViewModel::class)
     fun bindMainViewModel(mainViewModel: MainViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(HostViewModel::class)
-    fun bindHostViewModel(hostViewModel: HostViewModel): ViewModel
 
     @Binds
     @IntoMap

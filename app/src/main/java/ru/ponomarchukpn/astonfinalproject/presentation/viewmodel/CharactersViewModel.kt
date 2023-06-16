@@ -36,6 +36,10 @@ class CharactersViewModel @Inject constructor(
         nextPage()
     }
 
+    fun onFilterSettingsChanged() {
+        //TODO обновлять данные
+    }
+
     fun onSearchQueryChanged(query: String?) {
         searchQuery = query ?: EMPTY_QUERY
         emitFilteredWithQuery()

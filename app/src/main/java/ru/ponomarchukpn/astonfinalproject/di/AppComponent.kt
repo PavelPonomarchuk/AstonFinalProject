@@ -9,7 +9,6 @@ import ru.ponomarchukpn.astonfinalproject.presentation.screens.CharactersFragmen
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.EpisodeDetailsFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.EpisodesFilterFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.EpisodesFragment
-import ru.ponomarchukpn.astonfinalproject.presentation.screens.HostFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationDetailsFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationsFilterFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationsFragment
@@ -29,7 +28,6 @@ interface AppComponent {
 
     fun inject(mainActivity: MainActivity) //TODO м.б. убрать
 
-    fun inject(hostFragment: HostFragment)
     fun inject(charactersFragment: CharactersFragment)
     fun inject(characterDetailsFragment: CharacterDetailsFragment)
     fun inject(charactersFilterFragment: CharactersFilterFragment)

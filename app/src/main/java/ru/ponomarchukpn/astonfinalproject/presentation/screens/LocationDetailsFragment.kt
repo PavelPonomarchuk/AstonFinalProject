@@ -22,9 +22,6 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
     LocationDetailsViewModel::class.java
 ) {
 
-    private var locationId = UNDEFINED_ID
-    private var locationEntity: LocationEntity? = null
-
     private val adapter by lazy {
         CharactersAdapter(
             null,
@@ -33,6 +30,10 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
             }
         )
     }
+
+    private var tabName: String? = null
+    private var locationId = UNDEFINED_ID
+    private var locationEntity: LocationEntity? = null
 
     override fun createBinding(): FragmentLocationDetailsBinding {
         return FragmentLocationDetailsBinding.inflate(layoutInflater)
@@ -59,6 +60,7 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
     private fun parseArguments() {
         val args = requireArguments()
         locationId = args.getInt(KEY_LOCATION_ID)
+        tabName = args.getString(KEY_TAB_NAME)
     }
 
     private fun setAdapter() {
@@ -67,7 +69,7 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
 
     private fun setButtonBackListener() {
         binding.locationDetailsBack.setOnClickListener {
-            //TODO
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
@@ -110,21 +112,23 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
     }
 
     private fun launchCharacterDetailsFragment(characterId: Int) {
-        //TODO
-        childFragmentManager.beginTransaction()
-            .replace(R.id.host_container, CharacterDetailsFragment.newInstance(characterId))
-            .addToBackStack(null)
-            .commit()
-//        Toast.makeText(requireContext(), "id: $characterId", Toast.LENGTH_SHORT).show()
+        tabName?.let {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.main_container, CharacterDetailsFragment.newInstance(characterId, it))
+                .addToBackStack(it)
+                .commit()
+        }
     }
 
     companion object {
 
         private const val KEY_LOCATION_ID = "locationId"
+        private const val KEY_TAB_NAME = "tabName"
         private const val UNDEFINED_ID = 0
 
-        fun newInstance(id: Int) = LocationDetailsFragment().apply {
-            arguments = bundleOf(KEY_LOCATION_ID to id)
+        fun newInstance(id: Int, tabName: String) = LocationDetailsFragment().apply {
+            arguments = bundleOf(KEY_LOCATION_ID to id, KEY_TAB_NAME to tabName)
         }
     }
 }

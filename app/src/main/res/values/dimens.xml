@@ -17,4 +17,5 @@
     <dimen name="character_details_image_size">100dp</dimen>
     <dimen name="character_details_card_height">40dp</dimen>
     <dimen name="app_header_text_size">20sp</dimen>
+    <dimen name="main_navigation_height">70dp</dimen>
 </resources>

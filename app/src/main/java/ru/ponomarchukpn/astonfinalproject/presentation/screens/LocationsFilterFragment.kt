@@ -2,7 +2,8 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -41,8 +42,7 @@ class LocationsFilterFragment :
 
     private fun setButtonBackListener() {
         binding.locationsFilterBack.setOnClickListener {
-            //TODO закрывать фрагмент через result api
-            //возвращать уведомление, что настройки не менялись
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
@@ -89,9 +89,11 @@ class LocationsFilterFragment :
     }
 
     private fun finishWithSettingsChanged() {
-        //TODO возвращать уведомление что настройки изменились и закрывать фрагмент
-        //через result api
-        Toast.makeText(requireContext(), "Settings changed", Toast.LENGTH_SHORT).show()
+        setFragmentResult(
+            LocationsFragment.KEY_FILTER_CHANGED,
+            bundleOf(LocationsFragment.KEY_FILTER_CHANGED to true)
+        )
+        requireActivity().supportFragmentManager.popBackStack()
     }
 
     private fun notifyViewModel() {

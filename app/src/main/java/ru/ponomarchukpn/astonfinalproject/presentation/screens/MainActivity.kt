@@ -2,68 +2,70 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import com.google.android.material.navigation.NavigationBarView
 import ru.ponomarchukpn.astonfinalproject.R
-import ru.ponomarchukpn.astonfinalproject.common.MyApp
-import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
-import ru.ponomarchukpn.astonfinalproject.presentation.adapters.CharactersAdapter
-import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.MainViewModel
-import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.ViewModelFactory
-import javax.inject.Inject
+import ru.ponomarchukpn.astonfinalproject.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-//    @Inject
-//    lateinit var viewModelFactory: ViewModelFactory
-//
-//    private val appComponent by lazy {
-//        (application as MyApp).appComponent()
-//    }
-//
-//    private val viewModel by lazy {
-//        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
-//    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-//        appComponent.inject(this)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, HostFragment.newInstance())
-                .commit()
-        }
-
-//        val recycler = findViewById<RecyclerView>(R.id.main_test_recycler)
-//        val adapter = CharactersAdapter(
-//            onListEnded = {
-//                viewModel.loadCharactersPage()
-//            },
-//            onCharacterClick = {
-//                viewModel.loadCharacter(it.id)
-//            }
-//        )
-//        recycler.adapter = adapter
-//
-//        viewModel.loadCharactersPage()
-//        viewModel.charactersLiveData.observe(this) {
-//            adapter.submitList(it)
-//        }
-//        viewModel.singleCharacterLiveData.observe(this) {
-//            it?.getContentIfNotHandled()?.let { entity ->
-//                showCharacterToast(entity)
-//            }
-//        }
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
     }
 
-//    private fun showCharacterToast(entity: CharacterEntity) {
-//        Toast.makeText(
-//            this,
-//            "Success: ${entity.id}, ${entity.name}",
-//            Toast.LENGTH_SHORT
-//        ).show()
-//    }
+    private var selectedTabName: String? = null
+
+    private val navigationListener = NavigationBarView.OnItemSelectedListener {
+        when (it.itemId) {
+            R.id.menu_item_characters -> {
+                val startFragment = CharactersFragment.newInstance(TAB_NAME_CHARACTERS)
+                showTab(startFragment, TAB_NAME_CHARACTERS)
+            }
+            R.id.menu_item_locations -> {
+                val startFragment = LocationsFragment.newInstance(TAB_NAME_LOCATIONS)
+                showTab(startFragment, TAB_NAME_LOCATIONS)
+            }
+            R.id.menu_item_episodes -> {
+                val startFragment = EpisodesFragment.newInstance(TAB_NAME_EPISODES)
+                showTab(startFragment, TAB_NAME_EPISODES)
+            }
+        }
+        true
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        setNavigationListener()
+        setDefaultSelectedTab(savedInstanceState)
+    }
+
+    private fun setNavigationListener() {
+        binding.mainNavigation.setOnItemSelectedListener(navigationListener)
+    }
+
+    private fun setDefaultSelectedTab(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
+            binding.mainNavigation.selectedItemId = R.id.menu_item_characters
+        }
+    }
+
+    private fun showTab(startFragment: Fragment, tabName: String) {
+        selectedTabName?.let {
+            supportFragmentManager.saveBackStack(it)
+        }
+        supportFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .replace(R.id.main_container, startFragment)
+            .commit()
+        supportFragmentManager.restoreBackStack(tabName)
+        selectedTabName = tabName
+    }
+
+    companion object {
+
+        private const val TAB_NAME_CHARACTERS = "tabCharacters"
+        private const val TAB_NAME_LOCATIONS = "tabLocations"
+        private const val TAB_NAME_EPISODES = "tabEpisodes"
+    }
 }

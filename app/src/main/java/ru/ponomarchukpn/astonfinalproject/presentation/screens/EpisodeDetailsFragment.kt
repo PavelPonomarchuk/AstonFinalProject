@@ -10,6 +10,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import ru.ponomarchukpn.astonfinalproject.R
 import ru.ponomarchukpn.astonfinalproject.databinding.FragmentEpisodeDetailsBinding
 import ru.ponomarchukpn.astonfinalproject.di.AppComponent
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
@@ -21,9 +22,6 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
     EpisodeDetailsViewModel::class.java
 ) {
 
-    private var episodeId = UNDEFINED_ID
-    private var episodeEntity: EpisodeEntity? = null
-
     private val adapter by lazy {
         CharactersAdapter(
             null,
@@ -32,6 +30,10 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
             }
         )
     }
+
+    private var tabName: String? = null
+    private var episodeId = UNDEFINED_ID
+    private var episodeEntity: EpisodeEntity? = null
 
     override fun createBinding(): FragmentEpisodeDetailsBinding {
         return FragmentEpisodeDetailsBinding.inflate(layoutInflater)
@@ -58,6 +60,7 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
     private fun parseArguments() {
         val args = requireArguments()
         episodeId = args.getInt(KEY_EPISODE_ID)
+        tabName = args.getString(KEY_TAB_NAME)
     }
 
     private fun setAdapter() {
@@ -66,7 +69,7 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
 
     private fun setButtonBackListener() {
         binding.episodeDetailsBack.setOnClickListener {
-            //TODO
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
@@ -109,17 +112,23 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
     }
 
     private fun launchCharacterDetailsFragment(characterId: Int) {
-        //TODO
-        Toast.makeText(requireContext(), "id: $characterId", Toast.LENGTH_SHORT).show()
+        tabName?.let {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.main_container, CharacterDetailsFragment.newInstance(characterId, it))
+                .addToBackStack(it)
+                .commit()
+        }
     }
 
     companion object {
 
         private const val KEY_EPISODE_ID = "episodeId"
+        private const val KEY_TAB_NAME = "tabName"
         private const val UNDEFINED_ID = 0
 
-        fun newInstance(id: Int) = EpisodeDetailsFragment().apply {
-            arguments = bundleOf(KEY_EPISODE_ID to id)
+        fun newInstance(id: Int, tabName: String) = EpisodeDetailsFragment().apply {
+            arguments = bundleOf(KEY_EPISODE_ID to id, KEY_TAB_NAME to tabName)
         }
     }
 }

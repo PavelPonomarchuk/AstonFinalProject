@@ -3,6 +3,8 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 import android.os.Bundle
 import android.view.View
 import android.widget.SearchView
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -28,12 +30,19 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
         )
     }
 
+    private var tabName: String? = null
+
     override fun createBinding(): FragmentEpisodesBinding {
         return FragmentEpisodesBinding.inflate(layoutInflater)
     }
 
     override fun injectDependencies(appComponent: AppComponent) {
         appComponent.inject(this)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseArguments()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,9 +52,15 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
         setOnRefreshListener()
         setButtonClearListener()
         setButtonFilterListener()
+        setFilterChangedResultListener()
         setSearchViewListener()
         subscribeFlow()
         notifyViewModel()
+    }
+
+    private fun parseArguments() {
+        val args = requireArguments()
+        tabName = args.getString(KEY_TAB_NAME)
     }
 
     private fun setAdapter() {
@@ -65,6 +80,15 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
     private fun setButtonFilterListener() {
         binding.episodesButtonFilter.setOnClickListener {
             launchFilterFragment()
+        }
+    }
+
+    private fun setFilterChangedResultListener() {
+        setFragmentResultListener(KEY_FILTER_CHANGED) { key, bundle ->
+            val isChanged = bundle.getBoolean(key)
+            if (isChanged) {
+                viewModel.onFilterSettingsChanged()
+            }
         }
     }
 
@@ -95,21 +119,32 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
     }
 
     private fun launchDetailsFragment(episodeId: Int) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.host_container, EpisodeDetailsFragment.newInstance(episodeId))
-            .addToBackStack(null)
-            .commit()
+        tabName?.let {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.main_container, EpisodeDetailsFragment.newInstance(episodeId, it))
+                .addToBackStack(it)
+                .commit()
+        }
     }
 
     private fun launchFilterFragment() {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.host_container, EpisodesFilterFragment.newInstance())
-            .addToBackStack(null)
-            .commit()
+        tabName?.let {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.main_container, EpisodesFilterFragment.newInstance())
+                .addToBackStack(it)
+                .commit()
+        }
     }
 
     companion object {
 
-        fun newInstance() = EpisodesFragment()
+        const val KEY_FILTER_CHANGED = "episodesFilterChanged"
+        private const val KEY_TAB_NAME = "tabName"
+
+        fun newInstance(tabName: String) = EpisodesFragment().apply {
+            arguments = bundleOf(KEY_TAB_NAME to tabName)
+        }
     }
 }

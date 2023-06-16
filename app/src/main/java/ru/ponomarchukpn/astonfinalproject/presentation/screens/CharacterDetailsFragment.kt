@@ -26,9 +26,6 @@ class CharacterDetailsFragment :
         CharacterDetailsViewModel::class.java
     ) {
 
-    private var characterId = UNDEFINED_ID
-    private var characterEntity: CharacterEntity? = null
-
     private val adapter by lazy {
         EpisodesAdapter(
             null,
@@ -37,6 +34,10 @@ class CharacterDetailsFragment :
             }
         )
     }
+
+    private var tabName: String? = null
+    private var characterId = UNDEFINED_ID
+    private var characterEntity: CharacterEntity? = null
 
     override fun createBinding(): FragmentCharacterDetailsBinding {
         return FragmentCharacterDetailsBinding.inflate(layoutInflater)
@@ -65,6 +66,7 @@ class CharacterDetailsFragment :
     private fun parseArguments() {
         val args = requireArguments()
         characterId = args.getInt(KEY_CHARACTER_ID)
+        tabName = args.getString(KEY_TAB_NAME)
     }
 
     private fun setAdapter() {
@@ -73,7 +75,7 @@ class CharacterDetailsFragment :
 
     private fun setButtonBackListener() {
         binding.characterDetailsBack.setOnClickListener {
-            //TODO
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
@@ -162,28 +164,34 @@ class CharacterDetailsFragment :
     }
 
     private fun launchEpisodeDetailsFragment(episodeId: Int) {
-        //TODO
-        childFragmentManager.beginTransaction()
-            .replace(R.id.host_container, EpisodeDetailsFragment.newInstance(episodeId))
-            .addToBackStack(null)
-            .commit()
-
-        //Toast.makeText(requireContext(), "id: $episodeId", Toast.LENGTH_SHORT).show()
+        tabName?.let {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.main_container, EpisodeDetailsFragment.newInstance(episodeId, it))
+                .addToBackStack(it)
+                .commit()
+        }
     }
 
     //TODO вообще нужен ripple на origin и location для видимого эффекта клика
     private fun launchLocationDetailsFragment(locationId: Int) {
-        //TODO
-        Toast.makeText(requireContext(), "id: $locationId", Toast.LENGTH_SHORT).show()
+        tabName?.let {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.main_container, LocationDetailsFragment.newInstance(locationId, it))
+                .addToBackStack(it)
+                .commit()
+        }
     }
 
     companion object {
 
         private const val KEY_CHARACTER_ID = "characterId"
+        private const val KEY_TAB_NAME = "tabName"
         private const val UNDEFINED_ID = 0
 
-        fun newInstance(id: Int) = CharacterDetailsFragment().apply {
-            arguments = bundleOf(KEY_CHARACTER_ID to id)
+        fun newInstance(id: Int, tabName: String) = CharacterDetailsFragment().apply {
+            arguments = bundleOf(KEY_CHARACTER_ID to id, KEY_TAB_NAME to tabName)
         }
     }
 }

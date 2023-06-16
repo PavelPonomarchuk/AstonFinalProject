@@ -77,6 +77,10 @@ class LocationsRepositoryImpl @Inject constructor(
 //        }
 //    }
 
+    //TODO бывает баг при загрузке локации
+    //java.lang.IllegalStateException: Expected BEGIN_ARRAY but was BEGIN_OBJECT at line 1 column 2 path $
+    //at com.google.gson.stream.JsonReader.beginArray ...
+
     //TODO возвращать налл если не удалось получить локацию по ид
     override suspend fun getLocation(locationId: Int) = if (context.isInternetAvailable()) {
         val locationDto = apiService.loadItem(locationId)
