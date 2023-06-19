@@ -2,6 +2,7 @@ package ru.ponomarchukpn.astonfinalproject.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -16,26 +17,26 @@ class EpisodesFilterViewModel @Inject constructor(
     private val saveEpisodesFilterUseCase: SaveEpisodesFilterUseCase
 ) : ViewModel() {
 
-    private var _episodesFilterState = MutableStateFlow<EpisodesFilterSettings?>(null)
+    private val _episodesFilterState = MutableStateFlow<EpisodesFilterSettings?>(null)
     val episodesFilterState = _episodesFilterState.asStateFlow()
         .filterNotNull()
 
-    private var _filterSavedState = MutableStateFlow<Boolean?>(null)
+    private val _filterSavedState = MutableStateFlow<Unit?>(null)
     val filterSavedState = _filterSavedState.asStateFlow()
         .filterNotNull()
 
     fun onViewCreated() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val settings = getEpisodesFilterUseCase.invoke()
             _episodesFilterState.tryEmit(settings)
         }
     }
 
     fun onApplyPressed(settings: EpisodesFilterSettings) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val success = saveEpisodesFilterUseCase.invoke(settings)
             if (success) {
-                _filterSavedState.tryEmit(true)
+                _filterSavedState.tryEmit(Unit)
             }
         }
     }

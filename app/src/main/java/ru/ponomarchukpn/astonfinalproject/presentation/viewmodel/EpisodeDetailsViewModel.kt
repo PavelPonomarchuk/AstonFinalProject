@@ -2,6 +2,7 @@ package ru.ponomarchukpn.astonfinalproject.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -17,15 +18,15 @@ class EpisodeDetailsViewModel @Inject constructor(
     private val getCharactersByIdUseCase: GetCharactersByIdUseCase
 ) : ViewModel() {
 
-    private var _episodeState = MutableStateFlow<EpisodeEntity?>(null)
+    private val _episodeState = MutableStateFlow<EpisodeEntity?>(null)
     val episodeState = _episodeState.asStateFlow()
         .filterNotNull()
 
-    private var _charactersListState = MutableStateFlow<List<CharacterEntity>?>(null)
+    private val _charactersListState = MutableStateFlow<List<CharacterEntity>?>(null)
     val charactersListState = _charactersListState.asStateFlow()
         .filterNotNull()
 
-    private var _errorState = MutableStateFlow<Boolean?>(null)
+    private val _errorState = MutableStateFlow<Unit?>(null)
     val errorState = _errorState.asStateFlow()
         .filterNotNull()
 
@@ -37,7 +38,7 @@ class EpisodeDetailsViewModel @Inject constructor(
     }
 
     private fun loadEpisode(episodeId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = getSingleEpisodeUseCase.invoke(episodeId)
             result?.let {
                 entity = result
@@ -47,7 +48,7 @@ class EpisodeDetailsViewModel @Inject constructor(
     }
 
     private fun loadCharacters() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = entity?.charactersId?.let { getCharactersByIdUseCase.invoke(it) }
             result?.let {
                 charactersList.addAll(it)
@@ -62,6 +63,6 @@ class EpisodeDetailsViewModel @Inject constructor(
     }
 
     private fun emitError() {
-        _errorState.tryEmit(true)
+        _errorState.tryEmit(Unit)
     }
 }

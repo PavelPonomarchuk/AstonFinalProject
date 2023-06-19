@@ -2,6 +2,7 @@ package ru.ponomarchukpn.astonfinalproject.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -16,7 +17,7 @@ class CharactersViewModel @Inject constructor(
     private val resetCharactersPageUseCase: ResetCharactersPageUseCase
 ) : ViewModel() {
 
-    private var _charactersListState = MutableStateFlow<List<CharacterEntity>?>(null)
+    private val _charactersListState = MutableStateFlow<List<CharacterEntity>?>(null)
     val charactersListState = _charactersListState.asStateFlow()
         .filterNotNull()
 
@@ -61,7 +62,7 @@ class CharactersViewModel @Inject constructor(
     //при переключении табов и возврате назад показывается список со следующей страницы
     //то же при повороте экрана, загружается следующая страница
     private fun nextPage() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val page = getCharactersPageUseCase.invoke()
             if (page.isNotEmpty()) {
                 charactersList.addAll(page)

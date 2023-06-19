@@ -2,6 +2,7 @@ package ru.ponomarchukpn.astonfinalproject.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -19,23 +20,23 @@ class CharacterDetailsViewModel @Inject constructor(
     private val getLocationNameUseCase: GetLocationNameUseCase
 ) : ViewModel() {
 
-    private var _characterState = MutableStateFlow<CharacterEntity?>(null)
+    private val _characterState = MutableStateFlow<CharacterEntity?>(null)
     val characterState = _characterState.asStateFlow()
         .filterNotNull()
 
-    private var _originNameState = MutableStateFlow<String?>(null)
+    private val _originNameState = MutableStateFlow<String?>(null)
     val originNameState = _originNameState.asStateFlow()
         .filterNotNull()
 
-    private var _locationNameState = MutableStateFlow<String?>(null)
+    private val _locationNameState = MutableStateFlow<String?>(null)
     val locationNameState = _locationNameState.asStateFlow()
         .filterNotNull()
 
-    private var _episodesListState = MutableStateFlow<List<EpisodeEntity>?>(null)
+    private val _episodesListState = MutableStateFlow<List<EpisodeEntity>?>(null)
     val episodesListState = _episodesListState.asStateFlow()
         .filterNotNull()
 
-    private var _errorState = MutableStateFlow<Boolean?>(null)
+    private val _errorState = MutableStateFlow<Unit?>(null)
     val errorState = _errorState.asStateFlow()
         .filterNotNull()
 
@@ -49,7 +50,7 @@ class CharacterDetailsViewModel @Inject constructor(
     }
 
     private fun loadCharacter(characterId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val characterResult = getSingleCharacterUseCase.invoke(characterId)
             if (characterResult != null) {
                 entity = characterResult
@@ -79,7 +80,7 @@ class CharacterDetailsViewModel @Inject constructor(
     }
 
     private fun loadName(id: Int, callback: (name: String) -> Unit) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = getLocationNameUseCase.invoke(id)
             result?.let {
                 callback.invoke(it)
@@ -91,7 +92,7 @@ class CharacterDetailsViewModel @Inject constructor(
     }
 
     private fun loadEpisodes() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val episodesResult = entity?.episodesId?.let { getEpisodesByIdUseCase.invoke(it) }
             episodesResult?.let {
                 episodesList.addAll(it)
@@ -111,7 +112,7 @@ class CharacterDetailsViewModel @Inject constructor(
     }
 
     private fun emitError() {
-        _errorState.tryEmit(true)
+        _errorState.tryEmit(Unit)
     }
 
     companion object {
