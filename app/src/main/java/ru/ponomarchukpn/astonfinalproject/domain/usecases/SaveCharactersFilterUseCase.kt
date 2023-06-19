@@ -2,8 +2,9 @@ package ru.ponomarchukpn.astonfinalproject.domain.usecases
 
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharactersFilterSettings
 import ru.ponomarchukpn.astonfinalproject.domain.repository.CharactersRepository
+import javax.inject.Inject
 
-class SaveCharactersFilterUseCase(
+class SaveCharactersFilterUseCase @Inject constructor(
     private val repository: CharactersRepository
 ) {
 

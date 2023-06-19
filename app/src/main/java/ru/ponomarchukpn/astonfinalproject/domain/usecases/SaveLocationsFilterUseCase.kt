@@ -2,8 +2,9 @@ package ru.ponomarchukpn.astonfinalproject.domain.usecases
 
 import ru.ponomarchukpn.astonfinalproject.domain.entity.LocationsFilterSettings
 import ru.ponomarchukpn.astonfinalproject.domain.repository.LocationsRepository
+import javax.inject.Inject
 
-class SaveLocationsFilterUseCase(
+class SaveLocationsFilterUseCase @Inject constructor(
     private val repository: LocationsRepository
 ) {
 

@@ -1,8 +1,9 @@
 package ru.ponomarchukpn.astonfinalproject.domain.usecases
 
 import ru.ponomarchukpn.astonfinalproject.domain.repository.EpisodesRepository
+import javax.inject.Inject
 
-class GetSingleEpisodeUseCase(
+class GetSingleEpisodeUseCase @Inject constructor(
     private val repository: EpisodesRepository
 ) {
 

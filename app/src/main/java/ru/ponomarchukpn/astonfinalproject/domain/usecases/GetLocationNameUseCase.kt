@@ -1,8 +1,9 @@
 package ru.ponomarchukpn.astonfinalproject.domain.usecases
 
 import ru.ponomarchukpn.astonfinalproject.domain.repository.LocationsRepository
+import javax.inject.Inject
 
-class GetLocationNameUseCase(
+class GetLocationNameUseCase @Inject constructor(
     private val repository: LocationsRepository
 ) {
 
