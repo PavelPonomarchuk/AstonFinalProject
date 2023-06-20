@@ -2,18 +2,19 @@ package ru.ponomarchukpn.astonfinalproject.data.database
 
 import androidx.room.Dao
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CharactersDao : BaseDao<CharacterDbModel> {
 
-    @Query("SELECT * FROM $TABLE_NAME WHERE relatedToPage == :page ORDER BY id ASC")
-    suspend fun getPage(page: Int): List<CharacterDbModel>
+    @Query("SELECT * FROM $TABLE_NAME ORDER BY id")
+    fun getAll(): Flow<List<CharacterDbModel>>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE id == :itemId LIMIT 1")
-    suspend fun getItem(itemId: Int): CharacterDbModel
+    fun getItem(itemId: Int): Flow<CharacterDbModel>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE id IN (:ids)")
-    suspend fun getItemsByIds(ids: List<Int>): List<CharacterDbModel>
+    fun getItemsByIds(ids: List<Int>): Flow<List<CharacterDbModel>>
 
     companion object {
 

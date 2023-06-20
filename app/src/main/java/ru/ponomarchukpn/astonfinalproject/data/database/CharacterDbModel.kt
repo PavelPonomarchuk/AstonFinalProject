@@ -17,6 +17,5 @@ data class CharacterDbModel(
     val imageUrl: String,
     val episodesId: String,
     val url: String,
-    val created: String,
-    val relatedToPage: Int
+    val created: String
 )

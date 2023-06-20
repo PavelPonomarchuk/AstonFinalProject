@@ -51,16 +51,19 @@ class CharacterMapper @Inject constructor() {
         created = dto.created
     )
 
-    fun mapPageDtoToDbModelList(charactersPage: ResponseDto, pageNumber: Int) =
+    //TODO почистить всё
+    fun mapPageDtoToDbModelList(charactersPage: ResponseDto) =
         mutableListOf<CharacterDbModel>().apply {
             charactersPage.results.forEach { characterJsonObject ->
                 Gson().fromJson(characterJsonObject, CharacterDto::class.java)?.let {
-                    this.add(mapDtoToDbModel(it, pageNumber))
+                    this.add(mapDtoToDbModel(it))
                 }
             }
         }.toList()
 
-    private fun mapDtoToDbModel(dto: CharacterDto, page: Int) = CharacterDbModel(
+    fun mapDtoListToDbModelList(dtoList: List<CharacterDto>) = dtoList.map { mapDtoToDbModel(it) }
+
+    private fun mapDtoToDbModel(dto: CharacterDto) = CharacterDbModel(
         id = dto.id,
         name = dto.name,
         status = when (dto.status) {
@@ -83,8 +86,7 @@ class CharacterMapper @Inject constructor() {
         imageUrl = dto.image,
         episodesId = dto.episode.getIdListFromUrls().joinToString(),
         url = dto.url,
-        created = dto.created,
-        relatedToPage = page
+        created = dto.created
     )
 
     fun mapDbModelsListToEntitiesList(dbModels: List<CharacterDbModel>) = dbModels.map {

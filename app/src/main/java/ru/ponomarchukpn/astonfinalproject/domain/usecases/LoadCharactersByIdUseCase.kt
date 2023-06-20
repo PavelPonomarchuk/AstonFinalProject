@@ -3,9 +3,9 @@ package ru.ponomarchukpn.astonfinalproject.domain.usecases
 import ru.ponomarchukpn.astonfinalproject.domain.repository.CharactersRepository
 import javax.inject.Inject
 
-class GetCharactersPageUseCase @Inject constructor(
+class LoadCharactersByIdUseCase @Inject constructor(
     private val repository: CharactersRepository
 ) {
 
-    suspend operator fun invoke() = repository.getNextCharactersPage()
+    suspend operator fun invoke(ids: List<Int>) = repository.loadCharactersById(ids)
 }

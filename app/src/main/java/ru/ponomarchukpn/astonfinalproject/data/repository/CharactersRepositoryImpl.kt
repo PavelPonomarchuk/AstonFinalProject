@@ -1,11 +1,12 @@
 package ru.ponomarchukpn.astonfinalproject.data.repository
 
 import android.content.Context
-import ru.ponomarchukpn.astonfinalproject.common.isInternetAvailable
+import android.content.SharedPreferences
+import com.google.gson.Gson
+import kotlinx.coroutines.flow.map
 import ru.ponomarchukpn.astonfinalproject.data.database.CharactersDao
 import ru.ponomarchukpn.astonfinalproject.data.mapper.CharacterMapper
 import ru.ponomarchukpn.astonfinalproject.data.network.api.CharactersApiService
-import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharactersFilterSettings
 import ru.ponomarchukpn.astonfinalproject.domain.repository.CharactersRepository
 import javax.inject.Inject
@@ -17,111 +18,65 @@ class CharactersRepositoryImpl @Inject constructor(
     private val mapper: CharacterMapper
 ) : CharactersRepository {
 
-    //TODO а вообще в репозиториях - обработка ошибки при загрузке.
-    //интернет отрубился, например, в процессе загрузки, или эксепшены, от сервера 500 и пр.
-
-    private var pageNumber = INITIAL_PAGE_NUMBER
-    private var filterSettings: CharactersFilterSettings? = null
-    //TODO сделать постоянное хранение настроек фильтра
-
-//    override suspend fun getNextCharactersPage() = flow {
-//        if (context.isInternetAvailable()) {
-//            try {
-//                val pageDto = apiService.loadPage(pageNumber)
-//                charactersDao.insertList(
-//                    mapper.mapPageDtoToDbModelList(pageDto, pageNumber)
-//                )
-//                pageNumber++
-//                emit(mapper.mapPageToEntitiesList(pageDto))
-//            } catch (exception: Throwable) {
-//                emit(emptyList())
-//            }
-//        } else {
-//            val dbModels = charactersDao.getPage(pageNumber)
-//            if (dbModels.isNotEmpty()) {
-//                pageNumber++
-//                emit(mapper.mapDbModelsListToEntitiesList(dbModels))
-//            } else {
-//                emit(emptyList())
-//            }
-//        }
-//    }
-
-    override suspend fun getNextCharactersPage(): List<CharacterEntity> {
-        if (context.isInternetAvailable()) {
-            return try {
-                val pageDto = apiService.loadPage(pageNumber)
-                charactersDao.insertList(
-                    mapper.mapPageDtoToDbModelList(pageDto, pageNumber)
-                )
-                pageNumber++
-                mapper.mapPageToEntitiesList(pageDto)
-            } catch (exception: Throwable) {
-                emptyList()
-            }
-        } else {
-            val dbModels = charactersDao.getPage(pageNumber)
-            return if (dbModels.isNotEmpty()) {
-                pageNumber++
-                mapper.mapDbModelsListToEntitiesList(dbModels)
-            } else {
-                emptyList()
-            }
-        }
-    }
-
-//    override suspend fun getCharacter(characterId: Int) = flow {
-//        if (context.isInternetAvailable()) {
-//            val characterDto = apiService.loadItem(characterId)
-//            emit(mapper.mapDtoToEntity(characterDto))
-//        } else {
-//            val dbModel = charactersDao.getItem(characterId)
-//            emit(mapper.mapDbModelToEntity(dbModel))
-//        }
-//    }
-
-    //TODO возвращать null если не удалось получить сущность по id
-    override suspend fun getCharacter(characterId: Int) = if (context.isInternetAvailable()) {
-        //TODO баг, почему-то возвращается 404 при запросе персонажа
-        val characterDto = apiService.loadItem(characterId)
-        mapper.mapDtoToEntity(characterDto)
-    } else {
-        val dbModel = charactersDao.getItem(characterId)
-        mapper.mapDbModelToEntity(dbModel)
-    }
-
-    //TODO null при ошибке, обрабатывать если что пойдёт не так при загрузке
-    override suspend fun getCharactersById(ids: List<Int>) = if (ids.isEmpty()) {
-        emptyList()
-    } else if (context.isInternetAvailable()) {
-        val characters = apiService.loadItemsByIds(ids.joinToString(","))
-        mapper.mapDtoListToEntityList(characters)
-    } else {
-        val characters = charactersDao.getItemsByIds(ids)
-        if (characters.size < ids.size) {
-            null
-        } else {
-            mapper.mapDbModelsListToEntitiesList(characters)
-        }
-    }
-
-    override fun resetPage() {
-        pageNumber = INITIAL_PAGE_NUMBER
-        //TODO разрулить: сброс м.б. пока данные загружаются и прежнее значение ещё используется
-    }
-
-    override suspend fun getFilterSettings() = filterSettings ?: CharactersFilterSettings(
-        EMPTY_VALUE, null, EMPTY_VALUE, EMPTY_VALUE, null
+    private val preferences: SharedPreferences = context.getSharedPreferences(
+        CHARACTERS_PREFERENCES_NAME, Context.MODE_PRIVATE
     )
 
+    override fun getCharacters() = charactersDao.getAll().map {
+        mapper.mapDbModelsListToEntitiesList(it)
+    }
+
+    override suspend fun loadCharactersPage(pageNumber: Int): Boolean {
+        return try {
+            val pageDto = apiService.loadPage(pageNumber)
+            charactersDao.insertList(
+                mapper.mapPageDtoToDbModelList(pageDto)
+            )
+            true
+        } catch (exception: Throwable) {
+            false
+        }
+    }
+
+    override fun getCharacter(characterId: Int) = charactersDao.getItem(characterId).map {
+        mapper.mapDbModelToEntity(it)
+    }
+
+    override fun getCharactersById(ids: List<Int>) = charactersDao.getItemsByIds(ids).map {
+        mapper.mapDbModelsListToEntitiesList(it)
+    }
+
+    override suspend fun loadCharactersById(ids: List<Int>): Boolean {
+        return try {
+            val characters = apiService.loadItemsByIds(ids.joinToString(","))
+            charactersDao.insertList(
+                mapper.mapDtoListToDbModelList(characters)
+            )
+            true
+        } catch (exception: Throwable) {
+            false
+        }
+    }
+
+    override suspend fun getFilterSettings(): CharactersFilterSettings {
+        val json = preferences.getString(KEY_CHARACTERS_FILTER, null)
+        return json?.let {
+            Gson().fromJson(json, CharactersFilterSettings::class.java)
+        } ?: CharactersFilterSettings(
+            EMPTY_VALUE, null, EMPTY_VALUE, EMPTY_VALUE, null
+        )
+    }
+
     override suspend fun saveFilterSettings(settings: CharactersFilterSettings): Boolean {
-        filterSettings = settings
+        val json = Gson().toJson(settings)
+        preferences.edit().putString(KEY_CHARACTERS_FILTER, json).apply()
         return true
     }
 
     companion object {
 
-        private const val INITIAL_PAGE_NUMBER = 1
+        private const val CHARACTERS_PREFERENCES_NAME = "charactersRepositoryPreferences"
+        private const val KEY_CHARACTERS_FILTER = "charactersFilter"
         private const val EMPTY_VALUE = ""
     }
 }

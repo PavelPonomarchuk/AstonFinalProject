@@ -2,6 +2,7 @@ package ru.ponomarchukpn.astonfinalproject.common
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.widget.Toast
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
@@ -28,4 +29,8 @@ fun Context.isInternetAvailable(): Boolean {
         Context.CONNECTIVITY_SERVICE
     ) as ConnectivityManager
     return connectivityManager.activeNetworkInfo?.isConnected ?: false
+}
+
+fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }

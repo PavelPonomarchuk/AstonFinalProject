@@ -35,6 +35,8 @@
     <string name="gender_male">Male</string>
     <string name="gender_genderless">Genderless</string>
     <string name="gender_unknown">Unknown</string>
+    <string name="error_downloading_list">Error: pull the list to retry loading</string>
+    <string name="message_empty_results">Results not found</string>
     <string-array name="character_status_selection">
         <item>Not selected</item>
         <item>Alive</item>

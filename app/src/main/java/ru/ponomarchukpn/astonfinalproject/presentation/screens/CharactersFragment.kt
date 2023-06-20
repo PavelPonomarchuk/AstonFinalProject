@@ -6,12 +6,16 @@ import android.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.R
+import ru.ponomarchukpn.astonfinalproject.common.showToast
 import ru.ponomarchukpn.astonfinalproject.databinding.FragmentCharactersBinding
 import ru.ponomarchukpn.astonfinalproject.di.AppComponent
+import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.presentation.adapters.CharactersAdapter
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.CharactersViewModel
 
@@ -23,6 +27,7 @@ class CharactersFragment : BaseFragment<FragmentCharactersBinding, CharactersVie
         CharactersAdapter(
             onListEnded = {
                 viewModel.onListEnded()
+                startProgress()
             },
             onItemClick = {
                 launchDetailsFragment(it.id)
@@ -49,13 +54,14 @@ class CharactersFragment : BaseFragment<FragmentCharactersBinding, CharactersVie
         super.onViewCreated(view, savedInstanceState)
 
         setAdapter()
+        configureSwipeLayout()
         setOnRefreshListener()
-        setButtonClearListener()
         setButtonFilterListener()
         setFilterChangedResultListener()
         setSearchViewListener()
         subscribeFlow()
         notifyViewModel()
+        startProgress()
     }
 
     private fun parseArguments() {
@@ -67,14 +73,15 @@ class CharactersFragment : BaseFragment<FragmentCharactersBinding, CharactersVie
         binding.charactersRecycler.adapter = adapter
     }
 
+    private fun configureSwipeLayout() {
+        binding.charactersSwipeLayout.setProgressViewEndTarget(false, 0)
+    }
+
     private fun setOnRefreshListener() {
         binding.charactersSwipeLayout.setOnRefreshListener {
             viewModel.onListSwiped()
+            startProgress()
         }
-    }
-
-    private fun setButtonClearListener() {
-        //TODO
     }
 
     private fun setButtonFilterListener() {
@@ -106,16 +113,71 @@ class CharactersFragment : BaseFragment<FragmentCharactersBinding, CharactersVie
 
     private fun subscribeFlow() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.charactersListState
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                .collect { characters ->
-                    adapter.submitList(characters)
-                }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.charactersListState
+                    .onEach {
+                        processCharactersList(it)
+                    }
+                    .launchIn(this)
+
+                viewModel.notEmptyFilterState
+                    .onEach {
+                        setButtonClearState(it)
+                    }
+                    .launchIn(this)
+
+                viewModel.errorState
+                    .onEach {
+                        showError()
+                        stopProgress()
+                    }
+                    .launchIn(this)
+
+                viewModel.emptyResultState
+                    .onEach { showEmptyResultToast() }
+                    .launchIn(this)
+            }
         }
     }
 
     private fun notifyViewModel() {
         viewModel.onViewCreated()
+    }
+
+    private fun processCharactersList(characters: List<CharacterEntity>) {
+        adapter.submitList(characters)
+        stopProgress()
+    }
+
+    private fun startProgress() {
+        binding.charactersProgress.visibility = View.VISIBLE
+    }
+
+    private fun stopProgress() {
+        binding.charactersProgress.visibility = View.INVISIBLE
+    }
+
+    private fun showError() {
+        val errorMessage = getString(R.string.error_downloading_list)
+        requireContext().showToast(errorMessage)
+    }
+
+    private fun showEmptyResultToast() {
+        val emptyResultMessage = getString(R.string.message_empty_results)
+        requireContext().showToast(emptyResultMessage)
+    }
+
+    private fun setButtonClearState(notEmptyFilter: Boolean) {
+        if (notEmptyFilter) {
+            binding.charactersButtonClear.setBackgroundResource(R.drawable.colored_button_ripple)
+            binding.charactersButtonClear.setOnClickListener {
+                viewModel.onButtonClearPressed()
+                startProgress()
+            }
+        } else {
+            binding.charactersButtonClear.setBackgroundResource(R.drawable.gray_button_shape)
+            binding.charactersButtonClear.setOnClickListener(null)
+        }
     }
 
     private fun launchDetailsFragment(characterId: Int) {

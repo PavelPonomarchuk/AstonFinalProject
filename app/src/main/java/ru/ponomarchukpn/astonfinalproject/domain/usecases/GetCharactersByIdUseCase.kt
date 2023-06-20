@@ -7,5 +7,5 @@ class GetCharactersByIdUseCase @Inject constructor(
     private val repository: CharactersRepository
 ) {
 
-    suspend operator fun invoke(ids: List<Int>) = repository.getCharactersById(ids)
+    operator fun invoke(ids: List<Int>) = repository.getCharactersById(ids)
 }
