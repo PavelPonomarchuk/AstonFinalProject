@@ -18,7 +18,7 @@ class EpisodesFilterFragment :
         EpisodesFilterViewModel::class.java
     ) {
 
-    private var settingsReceived: Boolean = false
+    private var restored: Boolean = false
 
     override fun createBinding(): FragmentEpisodesFilterBinding {
         return FragmentEpisodesFilterBinding.inflate(layoutInflater)
@@ -28,16 +28,21 @@ class EpisodesFilterFragment :
         appComponent.inject(this)
     }
 
-    //TODO обработать смену конфигурации - сохранять новые значения в полях
-    //и флаг
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        restoreState(savedInstanceState)
         setButtonBackListener()
         setButtonApplyListener()
         subscribeFilterSettingsFlow()
         subscribeFilterSavedFlow()
         notifyViewModel()
+    }
+
+    private fun restoreState(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
+            restored = true
+        }
     }
 
     private fun setButtonBackListener() {
@@ -48,10 +53,8 @@ class EpisodesFilterFragment :
 
     private fun setButtonApplyListener() {
         binding.episodesFilterApply.setOnClickListener {
-            if (settingsReceived) {
-                val settings = currentFilterSettings()
-                viewModel.onApplyPressed(settings)
-            }
+            val settings = currentFilterSettings()
+            viewModel.onApplyPressed(settings)
         }
     }
 
@@ -65,8 +68,9 @@ class EpisodesFilterFragment :
             viewModel.episodesFilterState
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collect {
-                    setFilterSettings(it)
-                    settingsReceived = true
+                    if (!restored) {
+                        setFilterSettings(it)
+                    }
                 }
         }
     }

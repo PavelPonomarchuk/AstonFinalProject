@@ -20,7 +20,7 @@ class CharactersFilterFragment :
         CharactersFilterViewModel::class.java
     ) {
 
-    private var settingsReceived: Boolean = false
+    private var restored: Boolean = false
 
     override fun createBinding(): FragmentCharactersFilterBinding {
         return FragmentCharactersFilterBinding.inflate(layoutInflater)
@@ -30,16 +30,33 @@ class CharactersFilterFragment :
         appComponent.inject(this)
     }
 
-    //TODO обработать смену конфигурации - сохранять новые значения в полях
-    //и флаг что настройки получены
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        restoreState(savedInstanceState)
         setButtonBackListener()
         setButtonApplyListener()
         subscribeFilterSettingsFlow()
         subscribeFilterSavedFlow()
         notifyViewModel()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val statusPosition = binding.charactersFilterStatusSpinner.selectedItemPosition
+        val genderPosition = binding.charactersFilterGenderSpinner.selectedItemPosition
+        outState.putInt(KEY_STATUS_POSITION, statusPosition)
+        outState.putInt(KEY_GENDER_POSITION, genderPosition)
+    }
+
+    private fun restoreState(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {
+            val statusPosition = it.getInt(KEY_STATUS_POSITION)
+            val genderPosition = it.getInt(KEY_GENDER_POSITION)
+            binding.charactersFilterStatusSpinner.setSelection(statusPosition)
+            binding.charactersFilterGenderSpinner.setSelection(genderPosition)
+            restored = true
+        }
     }
 
     private fun setButtonBackListener() {
@@ -50,10 +67,8 @@ class CharactersFilterFragment :
 
     private fun setButtonApplyListener() {
         binding.charactersFilterApply.setOnClickListener {
-            if (settingsReceived) {
-                val settings = currentFilterSettings()
-                viewModel.onApplyPressed(settings)
-            }
+            val settings = currentFilterSettings()
+            viewModel.onApplyPressed(settings)
         }
     }
 
@@ -86,8 +101,9 @@ class CharactersFilterFragment :
             viewModel.charactersFilterState
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .collect {
-                    setFilterSettings(it)
-                    settingsReceived = true
+                    if (!restored) {
+                        setFilterSettings(it)
+                    }
                 }
         }
     }
@@ -138,6 +154,9 @@ class CharactersFilterFragment :
     }
 
     companion object {
+
+        private const val KEY_STATUS_POSITION = "statusPosition"
+        private const val KEY_GENDER_POSITION = "genderPosition"
 
         fun newInstance() = CharactersFilterFragment()
     }
