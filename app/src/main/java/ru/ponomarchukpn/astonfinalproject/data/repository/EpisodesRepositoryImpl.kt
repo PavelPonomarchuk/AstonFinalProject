@@ -1,11 +1,12 @@
 package ru.ponomarchukpn.astonfinalproject.data.repository
 
 import android.content.Context
-import ru.ponomarchukpn.astonfinalproject.common.isInternetAvailable
+import android.content.SharedPreferences
+import com.google.gson.Gson
+import kotlinx.coroutines.flow.map
 import ru.ponomarchukpn.astonfinalproject.data.database.EpisodesDao
 import ru.ponomarchukpn.astonfinalproject.data.mapper.EpisodeMapper
 import ru.ponomarchukpn.astonfinalproject.data.network.api.EpisodesApiService
-import ru.ponomarchukpn.astonfinalproject.domain.entity.EpisodeEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.EpisodesFilterSettings
 import ru.ponomarchukpn.astonfinalproject.domain.repository.EpisodesRepository
 import javax.inject.Inject
@@ -17,107 +18,63 @@ class EpisodesRepositoryImpl @Inject constructor(
     private val mapper: EpisodeMapper
 ) : EpisodesRepository {
 
-    private var pageNumber = INITIAL_PAGE_NUMBER
-    private var filterSettings: EpisodesFilterSettings? = null
-    //TODO сделать постоянное хранение настроек фильтра
-
-//    override suspend fun getNextEpisodesPage() = flow {
-//        if (context.isInternetAvailable()) {
-//            try {
-//                val pageDto = apiService.loadPage(pageNumber)
-//                episodesDao.insertList(
-//                    mapper.mapPageToDbModelsList(pageDto, pageNumber)
-//                )
-//                pageNumber++
-//                emit(mapper.mapPageToEntitiesList(pageDto))
-//            } catch (exception: Throwable) {
-//                emit(emptyList())
-//            }
-//        } else {
-//            val dbModels = episodesDao.getPage(pageNumber)
-//            if (dbModels.isNotEmpty()) {
-//                pageNumber++
-//                emit(mapper.mapDbModelListToEntityList(dbModels))
-//            } else {
-//                emit(emptyList())
-//            }
-//        }
-//    }
-
-    override suspend fun getNextEpisodesPage(): List<EpisodeEntity> {
-        if (context.isInternetAvailable()) {
-            return try {
-                val pageDto = apiService.loadPage(pageNumber)
-                episodesDao.insertList(
-                    mapper.mapPageToDbModelsList(pageDto, pageNumber)
-                )
-                pageNumber++
-                mapper.mapPageToEntitiesList(pageDto)
-            } catch (exception: Throwable) {
-                emptyList()
-            }
-        } else {
-            val dbModels = episodesDao.getPage(pageNumber)
-            return if (dbModels.isNotEmpty()) {
-                pageNumber++
-                mapper.mapDbModelListToEntityList(dbModels)
-            } else {
-                emptyList()
-            }
-        }
-    }
-
-//    override suspend fun getEpisode(episodeId: Int) = flow {
-//        if (context.isInternetAvailable()) {
-//            val episodeDto = apiService.loadItem(episodeId)
-//            emit(mapper.mapDtoToEntity(episodeDto))
-//        } else {
-//            val dbModel = episodesDao.getItem(episodeId)
-//            emit(mapper.mapDbModelToEntity(dbModel))
-//        }
-//    }
-
-    //TODO возвращать налл если не удалось получить эпизод по ид
-    override suspend fun getEpisode(episodeId: Int) = if (context.isInternetAvailable()) {
-        val episodeDto = apiService.loadItem(episodeId)
-        mapper.mapDtoToEntity(episodeDto)
-    } else {
-        val dbModel = episodesDao.getItem(episodeId)
-        mapper.mapDbModelToEntity(dbModel)
-    }
-
-    //TODO тоже обработка ошибок при загрузке, возвращать null
-    override suspend fun getEpisodesById(ids: List<Int>) = if (ids.isEmpty()) {
-        emptyList()
-    } else if (context.isInternetAvailable()) {
-        val episodes = apiService.loadItemsByIds(ids.joinToString(","))
-        mapper.mapDtoListToEntityList(episodes)
-    } else {
-        val episodes = episodesDao.getItemsByIds(ids)
-        if (episodes.size < ids.size) {
-            null
-        } else {
-            mapper.mapDbModelListToEntityList(episodes)
-        }
-    }
-
-    override fun resetPage() {
-        pageNumber = INITIAL_PAGE_NUMBER
-        //TODO разрулить: сброс м.б. пока данные загружаются и прежнее значение ещё используется
-    }
-
-    override suspend fun getFilterSettings() = filterSettings ?: EpisodesFilterSettings(
-        EMPTY_VALUE, EMPTY_VALUE
+    private val preferences: SharedPreferences = context.getSharedPreferences(
+        EPISODES_PREFERENCES_NAME, Context.MODE_PRIVATE
     )
 
+    override suspend fun getFilterSettings(): EpisodesFilterSettings {
+        val json = preferences.getString(KEY_EPISODES_FILTER, null)
+        return json?.let {
+            Gson().fromJson(json, EpisodesFilterSettings::class.java)
+        } ?: EpisodesFilterSettings(EMPTY_VALUE, EMPTY_VALUE)
+    }
+
     override suspend fun saveFilterSettings(settings: EpisodesFilterSettings): Boolean {
-        filterSettings = settings
+        val json = Gson().toJson(settings)
+        preferences.edit().putString(KEY_EPISODES_FILTER, json).apply()
         return true
+    }
+
+    override fun getEpisodes() = episodesDao.getAll().map {
+        mapper.mapDbModelListToEntityList(it)
+    }
+
+    override suspend fun loadEpisodesPage(pageNumber: Int): Boolean {
+        return try {
+            val pageDto = apiService.loadPage(pageNumber)
+            episodesDao.insertList(
+                mapper.mapPageToDbModelsList(pageDto)
+            )
+            true
+        } catch (exception: Throwable) {
+            false
+        }
+    }
+
+    override fun getEpisode(episodeId: Int) = episodesDao.getItem(episodeId).map {
+        mapper.mapDbModelToEntity(it)
+    }
+
+    override fun getEpisodesById(ids: List<Int>) = episodesDao.getItemsByIds(ids).map {
+        mapper.mapDbModelListToEntityList(it)
+    }
+
+    override suspend fun loadEpisodesById(ids: List<Int>): Boolean {
+        return try {
+            val episodes = apiService.loadItemsByIds(ids.joinToString(","))
+            episodesDao.insertList(
+                mapper.mapDtoListToDbModelList(episodes)
+            )
+            true
+        } catch (exception: Throwable) {
+            false
+        }
     }
 
     companion object {
 
-        private const val INITIAL_PAGE_NUMBER = 1
+        private const val EPISODES_PREFERENCES_NAME = "episodesRepositoryPreferences"
+        private const val KEY_EPISODES_FILTER = "episodesFilter"
         private const val EMPTY_VALUE = ""
     }
 }

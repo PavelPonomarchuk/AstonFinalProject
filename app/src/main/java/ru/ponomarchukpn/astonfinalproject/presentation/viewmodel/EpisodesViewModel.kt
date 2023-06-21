@@ -8,13 +8,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.domain.entity.EpisodeEntity
-import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetEpisodesPageUseCase
-import ru.ponomarchukpn.astonfinalproject.domain.usecases.ResetEpisodesPageUseCase
 import javax.inject.Inject
 
 class EpisodesViewModel @Inject constructor(
-    private val getEpisodesPageUseCase: GetEpisodesPageUseCase,
-    private val resetEpisodesPageUseCase: ResetEpisodesPageUseCase
+//    private val getEpisodesPageUseCase: GetEpisodesPageUseCase,
+//    private val resetEpisodesPageUseCase: ResetEpisodesPageUseCase
 ) : ViewModel() {
 
     private val _episodesListState = MutableStateFlow<List<EpisodeEntity>?>(null)
@@ -33,7 +31,7 @@ class EpisodesViewModel @Inject constructor(
     }
 
     fun onListSwiped() {
-        resetEpisodesPageUseCase.invoke()
+//        resetEpisodesPageUseCase.invoke()
         nextPage()
     }
 
@@ -63,11 +61,11 @@ class EpisodesViewModel @Inject constructor(
     //то же при повороте экрана, загружается следующая страница
     private fun nextPage() {
         viewModelScope.launch(Dispatchers.IO) {
-            val page = getEpisodesPageUseCase.invoke()
-            if (page.isNotEmpty()) {
-                episodesList.addAll(page)
-                emitFilteredWithQuery()
-            }
+//            val page = getEpisodesPageUseCase.invoke()
+//            if (page.isNotEmpty()) {
+//                episodesList.addAll(page)
+//                emitFilteredWithQuery()
+//            }
         }
     }
 
