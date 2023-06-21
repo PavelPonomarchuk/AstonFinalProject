@@ -8,7 +8,7 @@ class CharactersMatcher @Inject constructor() {
 
     fun isCharacterMatches(filter: CharactersFilterSettings, character: CharacterEntity): Boolean {
         val nameMatches = if (filter.name != EMPTY_STRING) {
-            character.name.contains(filter.name)
+            character.name.contains(filter.name, true)
         } else {
             true
         }
@@ -18,13 +18,13 @@ class CharactersMatcher @Inject constructor() {
         } ?: true
 
         val speciesMatches = if (filter.species != EMPTY_STRING) {
-            character.species.contains(filter.species)
+            character.species.contains(filter.species, true)
         } else {
             true
         }
 
         val typeMatches = if (filter.type != EMPTY_STRING) {
-            character.type.contains(filter.type)
+            character.type.contains(filter.type, true)
         } else {
             true
         }

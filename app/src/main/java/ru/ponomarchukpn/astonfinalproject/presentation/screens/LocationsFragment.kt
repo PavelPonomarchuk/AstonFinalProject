@@ -6,12 +6,16 @@ import android.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.R
+import ru.ponomarchukpn.astonfinalproject.common.showToast
 import ru.ponomarchukpn.astonfinalproject.databinding.FragmentLocationsBinding
 import ru.ponomarchukpn.astonfinalproject.di.AppComponent
+import ru.ponomarchukpn.astonfinalproject.domain.entity.LocationEntity
 import ru.ponomarchukpn.astonfinalproject.presentation.adapters.LocationsAdapter
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.LocationsViewModel
 
@@ -23,6 +27,7 @@ class LocationsFragment : BaseFragment<FragmentLocationsBinding, LocationsViewMo
         LocationsAdapter(
             onListEnded = {
                 viewModel.onListEnded()
+                startProgress()
             },
             onItemClick = {
                 launchDetailsFragment(it.id)
@@ -49,13 +54,14 @@ class LocationsFragment : BaseFragment<FragmentLocationsBinding, LocationsViewMo
         super.onViewCreated(view, savedInstanceState)
 
         setAdapter()
+        configureSwipeLayout()
         setOnRefreshListener()
-        setButtonClearListener()
         setButtonFilterListener()
         setFilterChangedResultListener()
         setSearchViewListener()
         subscribeFlow()
         notifyViewModel()
+        startProgress()
     }
 
     private fun parseArguments() {
@@ -67,14 +73,15 @@ class LocationsFragment : BaseFragment<FragmentLocationsBinding, LocationsViewMo
         binding.locationsRecycler.adapter = adapter
     }
 
+    private fun configureSwipeLayout() {
+        binding.locationsSwipeLayout.setProgressViewEndTarget(false, 0)
+    }
+
     private fun setOnRefreshListener() {
         binding.locationsSwipeLayout.setOnRefreshListener {
             viewModel.onListSwiped()
+            startProgress()
         }
-    }
-
-    private fun setButtonClearListener() {
-        //TODO
     }
 
     private fun setButtonFilterListener() {
@@ -106,11 +113,30 @@ class LocationsFragment : BaseFragment<FragmentLocationsBinding, LocationsViewMo
 
     private fun subscribeFlow() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.locationsListState
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                .collect { locations ->
-                    adapter.submitList(locations)
-                }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.locationsListState
+                    .onEach {
+                        processLocationsList(it)
+                    }
+                    .launchIn(this)
+
+                viewModel.notEmptyFilterState
+                    .onEach {
+                        setButtonClearState(it)
+                    }
+                    .launchIn(this)
+
+                viewModel.errorState
+                    .onEach {
+                        showError()
+                        stopProgress()
+                    }
+                    .launchIn(this)
+
+                viewModel.emptyResultState
+                    .onEach { showEmptyResultToast() }
+                    .launchIn(this)
+            }
         }
     }
 
@@ -118,9 +144,45 @@ class LocationsFragment : BaseFragment<FragmentLocationsBinding, LocationsViewMo
         viewModel.onViewCreated()
     }
 
+    private fun processLocationsList(locations: List<LocationEntity>) {
+        adapter.submitList(locations)
+        stopProgress()
+    }
+
+    private fun startProgress() {
+        binding.locationsProgress.visibility = View.VISIBLE
+    }
+
+    private fun stopProgress() {
+        binding.locationsProgress.visibility = View.INVISIBLE
+    }
+
+    private fun showError() {
+        val errorMessage = getString(R.string.error_downloading_list)
+        requireContext().showToast(errorMessage)
+    }
+
+    private fun showEmptyResultToast() {
+        val emptyResultMessage = getString(R.string.message_empty_results)
+        requireContext().showToast(emptyResultMessage)
+    }
+
+    private fun setButtonClearState(notEmptyFilter: Boolean) {
+        if (notEmptyFilter) {
+            binding.locationsButtonClear.setBackgroundResource(R.drawable.colored_button_ripple)
+            binding.locationsButtonClear.setOnClickListener {
+                viewModel.onButtonClearPressed()
+                startProgress()
+            }
+        } else {
+            binding.locationsButtonClear.setBackgroundResource(R.drawable.gray_button_shape)
+            binding.locationsButtonClear.setOnClickListener(null)
+        }
+    }
+
     private fun launchDetailsFragment(locationId: Int) {
         tabName?.let {
-            requireActivity().supportFragmentManager.beginTransaction()
+            parentFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(R.id.main_container, LocationDetailsFragment.newInstance(locationId, it))
                 .addToBackStack(it)
@@ -130,7 +192,7 @@ class LocationsFragment : BaseFragment<FragmentLocationsBinding, LocationsViewMo
 
     private fun launchFilterFragment() {
         tabName?.let {
-            requireActivity().supportFragmentManager.beginTransaction()
+            parentFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(R.id.main_container, LocationsFilterFragment.newInstance())
                 .addToBackStack(it)

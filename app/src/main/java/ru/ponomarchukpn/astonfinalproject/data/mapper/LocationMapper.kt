@@ -65,7 +65,11 @@ class LocationMapper @Inject constructor() {
         name = dbModel.name,
         type = dbModel.type,
         dimension = dbModel.dimension,
-        residentsId = dbModel.residentsId.split(",").map { it.trim().toInt() },
+        residentsId = if (dbModel.residentsId != "") {
+            dbModel.residentsId.split(",").map { it.trim().toInt() }
+        } else {
+            emptyList()
+        },
         url = dbModel.url,
         created = dbModel.created
     )
