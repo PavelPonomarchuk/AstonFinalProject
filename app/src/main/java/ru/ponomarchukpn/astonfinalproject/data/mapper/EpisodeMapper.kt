@@ -64,7 +64,11 @@ class EpisodeMapper @Inject constructor() {
         name = dbModel.name,
         airDate = dbModel.airDate,
         episode = dbModel.episode,
-        charactersId = dbModel.charactersId.split(",").map { it.trim().toInt() },
+        charactersId = if (dbModel.charactersId != "") {
+            dbModel.charactersId.split(",").map { it.trim().toInt() }
+        } else {
+               emptyList()
+        },
         url = dbModel.url,
         created = dbModel.created
     )

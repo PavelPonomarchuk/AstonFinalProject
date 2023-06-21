@@ -50,15 +50,28 @@
         app:layout_constraintTop_toTopOf="@id/episodes_search"
         app:layout_constraintBottom_toBottomOf="@id/episodes_search" />
 
+    <ProgressBar
+        android:id="@+id/episodes_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/characters_progress_height"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/app_green_light"
+        android:indeterminateTintMode="src_in"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episodes_search" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/episodes_swipe_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/app_margin_small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episodes_search">
+        app:layout_constraintTop_toBottomOf="@id/episodes_progress">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/episodes_recycler"

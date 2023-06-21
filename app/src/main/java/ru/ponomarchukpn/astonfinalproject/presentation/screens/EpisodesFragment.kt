@@ -6,12 +6,16 @@ import android.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.R
+import ru.ponomarchukpn.astonfinalproject.common.showToast
 import ru.ponomarchukpn.astonfinalproject.databinding.FragmentEpisodesBinding
 import ru.ponomarchukpn.astonfinalproject.di.AppComponent
+import ru.ponomarchukpn.astonfinalproject.domain.entity.EpisodeEntity
 import ru.ponomarchukpn.astonfinalproject.presentation.adapters.EpisodesAdapter
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.EpisodesViewModel
 
@@ -23,6 +27,7 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
         EpisodesAdapter(
             onListEnded = {
                 viewModel.onListEnded()
+                startProgress()
             },
             onItemClick = {
                 launchDetailsFragment(it.id)
@@ -49,13 +54,14 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
         super.onViewCreated(view, savedInstanceState)
 
         setAdapter()
+        configureSwipeLayout()
         setOnRefreshListener()
-        setButtonClearListener()
         setButtonFilterListener()
         setFilterChangedResultListener()
         setSearchViewListener()
         subscribeFlow()
         notifyViewModel()
+        startProgress()
     }
 
     private fun parseArguments() {
@@ -67,14 +73,15 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
         binding.episodesRecycler.adapter = adapter
     }
 
+    private fun configureSwipeLayout() {
+        binding.episodesSwipeLayout.setProgressViewEndTarget(false, 0)
+    }
+
     private fun setOnRefreshListener() {
         binding.episodesSwipeLayout.setOnRefreshListener {
             viewModel.onListSwiped()
+            startProgress()
         }
-    }
-
-    private fun setButtonClearListener() {
-        //TODO
     }
 
     private fun setButtonFilterListener() {
@@ -106,11 +113,30 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
 
     private fun subscribeFlow() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.episodesListState
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                .collect { episodes ->
-                    adapter.submitList(episodes)
-                }
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.episodesListState
+                    .onEach {
+                        processEpisodesList(it)
+                    }
+                    .launchIn(this)
+
+                viewModel.notEmptyFilterState
+                    .onEach {
+                        setButtonClearState(it)
+                    }
+                    .launchIn(this)
+
+                viewModel.errorState
+                    .onEach {
+                        showError()
+                        stopProgress()
+                    }
+                    .launchIn(this)
+
+                viewModel.emptyResultState
+                    .onEach { showEmptyResultToast() }
+                    .launchIn(this)
+            }
         }
     }
 
@@ -118,9 +144,45 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
         viewModel.onViewCreated()
     }
 
+    private fun processEpisodesList(episodes: List<EpisodeEntity>) {
+        adapter.submitList(episodes)
+        stopProgress()
+    }
+
+    private fun startProgress() {
+        binding.episodesProgress.visibility = View.VISIBLE
+    }
+
+    private fun stopProgress() {
+        binding.episodesProgress.visibility = View.INVISIBLE
+    }
+
+    private fun showError() {
+        val errorMessage = getString(R.string.error_downloading_list)
+        requireContext().showToast(errorMessage)
+    }
+
+    private fun showEmptyResultToast() {
+        val emptyResultMessage = getString(R.string.message_empty_results)
+        requireContext().showToast(emptyResultMessage)
+    }
+
+    private fun setButtonClearState(notEmptyFilter: Boolean) {
+        if (notEmptyFilter) {
+            binding.episodesButtonClear.setBackgroundResource(R.drawable.colored_button_ripple)
+            binding.episodesButtonClear.setOnClickListener {
+                viewModel.onButtonClearPressed()
+                startProgress()
+            }
+        } else {
+            binding.episodesButtonClear.setBackgroundResource(R.drawable.gray_button_shape)
+            binding.episodesButtonClear.setOnClickListener(null)
+        }
+    }
+
     private fun launchDetailsFragment(episodeId: Int) {
         tabName?.let {
-            requireActivity().supportFragmentManager.beginTransaction()
+            parentFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(R.id.main_container, EpisodeDetailsFragment.newInstance(episodeId, it))
                 .addToBackStack(it)
@@ -130,7 +192,7 @@ class EpisodesFragment : BaseFragment<FragmentEpisodesBinding, EpisodesViewModel
 
     private fun launchFilterFragment() {
         tabName?.let {
-            requireActivity().supportFragmentManager.beginTransaction()
+            parentFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(R.id.main_container, EpisodesFilterFragment.newInstance())
                 .addToBackStack(it)
