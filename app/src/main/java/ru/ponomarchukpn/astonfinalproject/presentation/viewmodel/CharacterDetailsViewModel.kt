@@ -53,7 +53,7 @@ class CharacterDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val characterResult = getSingleCharacterUseCase.invoke(characterId)
             if (characterResult != null) {
-                entity = characterResult
+//                entity = characterResult
                 loadOriginName()
             } else {
                 emitError()
@@ -81,13 +81,13 @@ class CharacterDetailsViewModel @Inject constructor(
 
     private fun loadName(id: Int, callback: (name: String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = getLocationNameUseCase.invoke(id)
-            result?.let {
-                callback.invoke(it)
-            }
-            if (result == null) {
-                emitError()
-            }
+//            val result = getLocationNameUseCase.invoke(id)
+//            result?.let {
+//                callback.invoke(it)
+//            }
+//            if (result == null) {
+//                emitError()
+//            }
         }
     }
 

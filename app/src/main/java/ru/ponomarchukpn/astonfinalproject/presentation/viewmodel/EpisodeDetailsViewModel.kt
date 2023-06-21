@@ -51,7 +51,7 @@ class EpisodeDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val result = entity?.charactersId?.let { getCharactersByIdUseCase.invoke(it) }
             result?.let {
-                charactersList.addAll(it)
+                //charactersList.addAll(it)
                 emitData()
             } ?: emitError()
         }

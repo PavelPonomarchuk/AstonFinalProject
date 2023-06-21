@@ -41,7 +41,7 @@ class LocationDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val result = getSingleLocationUseCase.invoke(locationId)
             result?.let {
-                entity = result
+//                entity = result
                 loadCharacters()
             } ?: emitError()
         }
@@ -51,7 +51,7 @@ class LocationDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val result = entity?.residentsId?.let { getCharactersByIdUseCase.invoke(it) }
             result?.let {
-                charactersList.addAll(it)
+//                charactersList.addAll(it)
                 emitData()
             } ?: emitError()
         }

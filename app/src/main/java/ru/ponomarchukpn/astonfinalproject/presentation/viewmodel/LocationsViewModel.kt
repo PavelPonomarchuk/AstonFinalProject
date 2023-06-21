@@ -8,13 +8,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.domain.entity.LocationEntity
-import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetLocationsPageUseCase
-import ru.ponomarchukpn.astonfinalproject.domain.usecases.ResetLocationsPageUseCase
 import javax.inject.Inject
 
 class LocationsViewModel @Inject constructor(
-    private val getLocationsPageUseCase: GetLocationsPageUseCase,
-    private val resetLocationsPageUseCase: ResetLocationsPageUseCase
+//    private val getLocationsPageUseCase: GetLocationsPageUseCase
 ) : ViewModel() {
 
     private val _locationsListState = MutableStateFlow<List<LocationEntity>?>(null)
@@ -33,7 +30,7 @@ class LocationsViewModel @Inject constructor(
     }
 
     fun onListSwiped() {
-        resetLocationsPageUseCase.invoke()
+//        resetLocationsPageUseCase.invoke()
         nextPage()
     }
 
@@ -62,13 +59,13 @@ class LocationsViewModel @Inject constructor(
     //при переключении табов и возврате назад показывается список со следующей страницы
     //то же при повороте экрана, загружается следующая страница
     private fun nextPage() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val page = getLocationsPageUseCase.invoke()
-            if (page.isNotEmpty()) {
-                locationsList.addAll(page)
-                emitFilteredWithQuery()
-            }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val page = getLocationsPageUseCase.invoke()
+//            if (page.isNotEmpty()) {
+//                locationsList.addAll(page)
+//                emitFilteredWithQuery()
+//            }
+//        }
     }
 
     companion object {

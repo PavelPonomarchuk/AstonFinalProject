@@ -12,6 +12,5 @@ data class LocationDbModel(
     val dimension: String,
     val residentsId: String,
     val url: String,
-    val created: String,
-    val relatedToPage: Int
+    val created: String
 )

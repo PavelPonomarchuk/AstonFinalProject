@@ -12,6 +12,8 @@ import javax.inject.Singleton
 @Singleton
 class LocationMapper @Inject constructor() {
 
+    //TODO почистить
+
     fun mapPageToLocationsList(page: ResponseDto): List<LocationEntity> {
         val resultList = mutableListOf<LocationEntity>()
 
@@ -33,24 +35,25 @@ class LocationMapper @Inject constructor() {
         created = dto.created
     )
 
-    fun mapPageToDbModelList(page: ResponseDto, pageNumber: Int) =
+    fun mapPageToDbModelList(page: ResponseDto) =
         mutableListOf<LocationDbModel>().apply {
             page.results.forEach { locationJsonObject ->
                 Gson().fromJson(locationJsonObject, LocationDto::class.java)?.let {
-                    this.add(mapDtoToDbModel(it, pageNumber))
+                    this.add(mapDtoToDbModel(it))
                 }
             }
         }.toList()
 
-    private fun mapDtoToDbModel(dto: LocationDto, page: Int) = LocationDbModel(
+    fun mapDtoListToDbModelList(dtoList: List<LocationDto>) = dtoList.map { mapDtoToDbModel(it) }
+
+    private fun mapDtoToDbModel(dto: LocationDto) = LocationDbModel(
         id = dto.id,
         name = dto.name,
         type = dto.type,
         dimension = dto.dimension,
         residentsId = dto.residents.getIdListFromUrls().joinToString(),
         url = dto.url,
-        created = dto.created,
-        relatedToPage = page
+        created = dto.created
     )
 
     fun mapDbModelListToEntityList(dbModels: List<LocationDbModel>) = dbModels.map {
