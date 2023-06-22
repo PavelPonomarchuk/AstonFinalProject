@@ -37,6 +37,11 @@
     <string name="gender_unknown">Unknown</string>
     <string name="error_downloading_list">Error: pull the list to retry loading</string>
     <string name="message_empty_results">Results not found</string>
+    <string name="message_error_reload">Fail to download data. Try again</string>
+    <string name="app_reload_label">Reload</string>
+    <string name="app_label_origin">Origin</string>
+    <string name="app_label_location">Location</string>
+    <string name="message_unknown_location">Unknown location</string>
     <string-array name="character_status_selection">
         <item>Not selected</item>
         <item>Alive</item>

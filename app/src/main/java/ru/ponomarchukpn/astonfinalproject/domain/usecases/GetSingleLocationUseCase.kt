@@ -7,5 +7,5 @@ class GetSingleLocationUseCase @Inject constructor(
     private val repository: LocationsRepository
 ) {
 
-    suspend operator fun invoke(locationId: Int) = repository.getLocation(locationId)
+    operator fun invoke(locationId: Int) = repository.getLocation(locationId)
 }

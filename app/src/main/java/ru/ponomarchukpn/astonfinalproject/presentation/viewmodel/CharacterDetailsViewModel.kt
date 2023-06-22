@@ -3,21 +3,27 @@ package ru.ponomarchukpn.astonfinalproject.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
 import ru.ponomarchukpn.astonfinalproject.domain.entity.EpisodeEntity
 import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetEpisodesByIdUseCase
-import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetLocationNameUseCase
 import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetSingleCharacterUseCase
+import ru.ponomarchukpn.astonfinalproject.domain.usecases.GetSingleLocationUseCase
+import ru.ponomarchukpn.astonfinalproject.domain.usecases.LoadEpisodesByIdUseCase
+import ru.ponomarchukpn.astonfinalproject.domain.usecases.LoadLocationsByIdUseCase
 import javax.inject.Inject
 
 class CharacterDetailsViewModel @Inject constructor(
     private val getSingleCharacterUseCase: GetSingleCharacterUseCase,
     private val getEpisodesByIdUseCase: GetEpisodesByIdUseCase,
-    private val getLocationNameUseCase: GetLocationNameUseCase
+    private val loadLocationsByIdUseCase: LoadLocationsByIdUseCase,
+    private val loadEpisodesByIdUseCase: LoadEpisodesByIdUseCase,
+    private val getSingleLocationUseCase: GetSingleLocationUseCase
 ) : ViewModel() {
 
     private val _characterState = MutableStateFlow<CharacterEntity?>(null)
@@ -36,87 +42,122 @@ class CharacterDetailsViewModel @Inject constructor(
     val episodesListState = _episodesListState.asStateFlow()
         .filterNotNull()
 
-    private val _errorState = MutableStateFlow<Unit?>(null)
+    private val _errorState = MutableStateFlow<Any?>(null)
     val errorState = _errorState.asStateFlow()
         .filterNotNull()
 
-    private var entity: CharacterEntity? = null
-    private var originName: String = UNDEFINED_NAME
-    private var locationName: String = UNDEFINED_NAME
-    private val episodesList = mutableListOf<EpisodeEntity>()
+    private var characterJob: Job? = null
+    private var locationNameJob: Job? = null
+    private var originNameJob: Job? = null
+    private var episodesJob: Job? = null
 
     fun onViewCreated(characterId: Int) {
-        loadCharacter(characterId)
+        provideCharacterFlow(characterId)
     }
 
-    private fun loadCharacter(characterId: Int) {
+    fun onButtonReloadPressed(characterId: Int) {
+        characterJob?.cancel()
+        locationNameJob?.cancel()
+        originNameJob?.cancel()
+        episodesJob?.cancel()
+        provideCharacterFlow(characterId)
+    }
+
+    private fun provideCharacterFlow(characterId: Int) {
+        characterJob = viewModelScope.launch(Dispatchers.IO) {
+            getSingleCharacterUseCase.invoke(characterId)
+                .catch {
+                    emitError()
+                }
+                .collect {
+                    _characterState.tryEmit(it)
+                    provideExtraCharacterDetails(it)
+                }
+        }
+    }
+
+    private fun provideExtraCharacterDetails(entity: CharacterEntity) {
+        loadLocationAndOrigin(entity)
+        loadEpisodes(entity.episodesId)
+        provideLocationNameFlow(entity.locationId)
+        provideOriginNameFlow(entity.originId)
+        provideEpisodesFlow(entity.episodesId)
+    }
+
+    private fun loadLocationAndOrigin(entity: CharacterEntity) {
+        val ids = mutableListOf<Int>()
+        if (entity.locationId != UNDEFINED_ID) {
+            ids.add(entity.locationId)
+        }
+        if (entity.originId != UNDEFINED_ID) {
+            ids.add(entity.originId)
+        }
         viewModelScope.launch(Dispatchers.IO) {
-            val characterResult = getSingleCharacterUseCase.invoke(characterId)
-            if (characterResult != null) {
-//                entity = characterResult
-                loadOriginName()
-            } else {
-                emitError()
-            }
+            loadLocationsByIdUseCase.invoke(ids.toList())
         }
     }
 
-    private fun loadOriginName() {
-        entity?.originId?.let {
-            loadName(it) { name ->
-                originName = name
-                loadLocationName()
-            }
-        }
-    }
-
-    private fun loadLocationName() {
-        entity?.locationId?.let {
-            loadName(it) { name ->
-                locationName = name
-                loadEpisodes()
-            }
-        }
-    }
-
-    private fun loadName(id: Int, callback: (name: String) -> Unit) {
+    private fun loadEpisodes(ids: List<Int>) {
         viewModelScope.launch(Dispatchers.IO) {
-//            val result = getLocationNameUseCase.invoke(id)
-//            result?.let {
-//                callback.invoke(it)
-//            }
-//            if (result == null) {
-//                emitError()
-//            }
+            loadEpisodesByIdUseCase.invoke(ids)
         }
     }
 
-    private fun loadEpisodes() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val episodesResult = entity?.episodesId?.let { getEpisodesByIdUseCase.invoke(it) }
-            episodesResult?.let {
-//                episodesList.addAll(it)
-                emitData()
-            }
-            if (episodesResult == null) {
-                emitError()
-            }
+    private fun provideLocationNameFlow(locationId: Int) {
+        if (locationId == UNDEFINED_ID) {
+            _locationNameState.tryEmit(UNKNOWN_VALUE)
+            return
+        }
+        locationNameJob = viewModelScope.launch(Dispatchers.IO) {
+            getSingleLocationUseCase.invoke(locationId)
+                .catch {
+                    emitError()
+                }
+                .collect {
+                    _locationNameState.tryEmit(it.name)
+                }
         }
     }
 
-    private fun emitData() {
-        _characterState.tryEmit(entity)
-        _episodesListState.tryEmit(episodesList)
-        _originNameState.tryEmit(originName)
-        _locationNameState.tryEmit(locationName)
+    private fun provideOriginNameFlow(originId: Int) {
+        if (originId == UNDEFINED_ID) {
+            _originNameState.tryEmit(UNKNOWN_VALUE)
+            return
+        }
+        originNameJob = viewModelScope.launch(Dispatchers.IO) {
+            getSingleLocationUseCase.invoke(originId)
+                .catch {
+                    emitError()
+                }
+                .collect {
+                    _originNameState.tryEmit(it.name)
+                }
+        }
+    }
+
+    private fun provideEpisodesFlow(ids: List<Int>) {
+        if (ids.isEmpty()) {
+            _episodesListState.tryEmit(emptyList())
+            return
+        }
+        episodesJob = viewModelScope.launch(Dispatchers.IO) {
+            getEpisodesByIdUseCase.invoke(ids)
+                .catch {
+                    emitError()
+                }
+                .collect {
+                    _episodesListState.tryEmit(it)
+                }
+        }
     }
 
     private fun emitError() {
-        _errorState.tryEmit(Unit)
+        _errorState.tryEmit(Any())
     }
 
     companion object {
 
-        private const val UNDEFINED_NAME = ""
+        private const val UNDEFINED_ID = -1
+        private const val UNKNOWN_VALUE = "Unknown"
     }
 }

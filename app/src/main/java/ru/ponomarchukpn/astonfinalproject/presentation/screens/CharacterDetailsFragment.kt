@@ -2,7 +2,6 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.R
+import ru.ponomarchukpn.astonfinalproject.common.showToast
 import ru.ponomarchukpn.astonfinalproject.databinding.FragmentCharacterDetailsBinding
 import ru.ponomarchukpn.astonfinalproject.di.AppComponent
 import ru.ponomarchukpn.astonfinalproject.domain.entity.CharacterEntity
@@ -38,6 +38,7 @@ class CharacterDetailsFragment :
     private var tabName: String? = null
     private var characterId = UNDEFINED_ID
     private var characterEntity: CharacterEntity? = null
+    private var loadedCount = COUNT_START
 
     override fun createBinding(): FragmentCharacterDetailsBinding {
         return FragmentCharacterDetailsBinding.inflate(layoutInflater)
@@ -61,6 +62,7 @@ class CharacterDetailsFragment :
         setLocationListener()
         subscribeFlow()
         notifyViewModel()
+        startProgress()
     }
 
     private fun parseArguments() {
@@ -99,19 +101,19 @@ class CharacterDetailsFragment :
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.characterState
-                    .onEach { setCharacterData(it) }
+                    .onEach { processCharacter(it) }
                     .launchIn(this)
 
                 viewModel.originNameState
-                    .onEach { setOriginName(it) }
+                    .onEach { processOriginName(it) }
                     .launchIn(this)
 
                 viewModel.locationNameState
-                    .onEach { setLocationName(it) }
+                    .onEach { processLocationName(it) }
                     .launchIn(this)
 
                 viewModel.episodesListState
-                    .onEach { setEpisodes(it) }
+                    .onEach { processEpisodes(it) }
                     .launchIn(this)
 
                 viewModel.errorState
@@ -119,6 +121,39 @@ class CharacterDetailsFragment :
                     .launchIn(this)
             }
         }
+    }
+
+    private fun processCharacter(character: CharacterEntity) {
+        setCharacterData(character)
+        checkLoadingCompleted()
+    }
+
+    private fun processOriginName(name: String) {
+        setOriginName(name)
+        checkLoadingCompleted()
+    }
+
+    private fun processLocationName(name: String) {
+        setLocationName(name)
+        checkLoadingCompleted()
+    }
+
+    private fun processEpisodes(episodes: List<EpisodeEntity>) {
+        setEpisodes(episodes)
+        checkLoadingCompleted()
+    }
+
+    private fun checkLoadingCompleted() {
+        loadedCount++
+        if (loadedCount == COUNT_EXPECTED) {
+            stopProgress()
+        }
+    }
+
+    private fun showError() {
+        hideContentViews()
+        stopProgress()
+        showErrorViews()
     }
 
     private fun setCharacterData(character: CharacterEntity) {
@@ -143,20 +178,54 @@ class CharacterDetailsFragment :
     }
 
     private fun setOriginName(name: String) {
-        binding.characterDetailsTvOrigin.text = name
+        val labelOrigin = getString(R.string.app_label_origin)
+        binding.characterDetailsTvOrigin.text = String.format("%s: %s", labelOrigin, name)
     }
 
     private fun setLocationName(name: String) {
-        binding.characterDetailsTvLocation.text = name
+        val labelLocation = getString(R.string.app_label_location)
+        binding.characterDetailsTvLocation.text = String.format("%s: %s", labelLocation, name)
     }
 
     private fun setEpisodes(episodes: List<EpisodeEntity>) {
         adapter.submitList(episodes)
     }
 
-    private fun showError() {
-        //TODO
-        Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+    private fun showErrorViews() {
+        binding.characterDetailsTextError.visibility = View.VISIBLE
+        binding.characterDetailsButtonReload.visibility = View.VISIBLE
+        binding.characterDetailsButtonReload.setOnClickListener {
+            viewModel.onButtonReloadPressed(characterId)
+            hideErrorViews()
+            showContentViews()
+            startProgress()
+        }
+    }
+
+    private fun hideErrorViews() {
+        binding.characterDetailsTextError.visibility = View.INVISIBLE
+        binding.characterDetailsButtonReload.visibility = View.INVISIBLE
+        binding.characterDetailsButtonReload.setOnClickListener(null)
+    }
+
+    private fun showContentViews() {
+        binding.characterDetailsName.visibility = View.VISIBLE
+        binding.characterDetailsScroll.visibility = View.VISIBLE
+        binding.characterDetailsRecyclerEpisodes.visibility = View.VISIBLE
+    }
+
+    private fun hideContentViews() {
+        binding.characterDetailsName.visibility = View.INVISIBLE
+        binding.characterDetailsScroll.visibility = View.GONE
+        binding.characterDetailsRecyclerEpisodes.visibility = View.GONE
+    }
+
+    private fun startProgress() {
+        binding.characterDetailsProgress.visibility = View.VISIBLE
+    }
+
+    private fun stopProgress() {
+        binding.characterDetailsProgress.visibility = View.INVISIBLE
     }
 
     private fun notifyViewModel() {
@@ -173,8 +242,11 @@ class CharacterDetailsFragment :
         }
     }
 
-    //TODO вообще нужен ripple на origin и location для видимого эффекта клика
     private fun launchLocationDetailsFragment(locationId: Int) {
+        if (locationId == UNDEFINED_LOCATION_ID) {
+            showUnknownLocationToast()
+            return
+        }
         tabName?.let {
             requireActivity().supportFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
@@ -184,11 +256,19 @@ class CharacterDetailsFragment :
         }
     }
 
+    private fun showUnknownLocationToast() {
+        val message = getString(R.string.message_unknown_location)
+        requireContext().showToast(message)
+    }
+
     companion object {
 
         private const val KEY_CHARACTER_ID = "characterId"
         private const val KEY_TAB_NAME = "tabName"
         private const val UNDEFINED_ID = 0
+        private const val COUNT_START = 0
+        private const val COUNT_EXPECTED = 4
+        private const val UNDEFINED_LOCATION_ID = -1
 
         fun newInstance(id: Int, tabName: String) = CharacterDetailsFragment().apply {
             arguments = bundleOf(KEY_CHARACTER_ID to id, KEY_TAB_NAME to tabName)

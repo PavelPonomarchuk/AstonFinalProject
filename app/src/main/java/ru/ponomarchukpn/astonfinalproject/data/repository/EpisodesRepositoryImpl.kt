@@ -60,6 +60,9 @@ class EpisodesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadEpisodesById(ids: List<Int>): Boolean {
+        if (ids.isEmpty()) {
+            return true
+        }
         return try {
             val episodes = apiService.loadItemsByIds(ids.joinToString(","))
             episodesDao.insertList(

@@ -47,6 +47,9 @@ class CharactersRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadCharactersById(ids: List<Int>): Boolean {
+        if (ids.isEmpty()) {
+            return true
+        }
         return try {
             val characters = apiService.loadItemsByIds(ids.joinToString(","))
             charactersDao.insertList(

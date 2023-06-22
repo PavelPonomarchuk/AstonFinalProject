@@ -56,6 +56,9 @@ class LocationsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadLocationsById(ids: List<Int>): Boolean {
+        if (ids.isEmpty()) {
+            return true
+        }
         return try {
             val locations = apiService.loadItemsByIds(ids.joinToString(","))
             locationsDao.insertList(

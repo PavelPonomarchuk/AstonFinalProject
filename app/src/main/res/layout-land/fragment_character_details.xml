@@ -27,7 +27,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/app_base_text_size"
         app:layout_constraintBottom_toTopOf="@id/character_details_guideline_header"
-        app:layout_constraintEnd_toStartOf="@id/character_details_guideline_center"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/character_details_back"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Man Painted Silver Who Makes Robot Noises" />
@@ -39,6 +39,54 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="@dimen/app_guideline_header_begin" />
 
+    <ProgressBar
+        android:id="@+id/character_details_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/characters_progress_height"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/app_green_light"
+        android:indeterminateTintMode="src_in"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_details_guideline_header" />
+
+    <TextView
+        android:id="@+id/character_details_text_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:elevation="2dp"
+        android:text="@string/message_error_reload"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_base_text_size"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_details_progress" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/character_details_button_reload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:background="@drawable/colored_button_ripple"
+        android:elevation="2dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="@dimen/app_base_padding"
+        android:paddingVertical="@dimen/app_button_padding_vertical"
+        android:text="@string/app_reload_label"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/app_base_text_size"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_details_text_error" />
+
     <ScrollView
         android:id="@+id/character_details_scroll"
         android:layout_width="0dp"
@@ -46,7 +94,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/character_details_guideline_center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/character_details_guideline_header">
+        app:layout_constraintTop_toBottomOf="@id/character_details_progress">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -231,7 +279,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/character_details_guideline_center"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/character_details_progress"
         tools:listitem="@layout/item_episode" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
