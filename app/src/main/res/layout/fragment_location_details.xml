@@ -39,6 +39,52 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="@dimen/app_guideline_header_begin" />
 
+    <ProgressBar
+        android:id="@+id/location_details_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/characters_progress_height"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/app_green_light"
+        android:indeterminateTintMode="src_in"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_details_guideline_header" />
+
+    <TextView
+        android:id="@+id/location_details_text_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:text="@string/message_error_reload"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_base_text_size"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_details_progress" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/location_details_button_reload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:background="@drawable/colored_button_ripple"
+        android:minHeight="0dp"
+        android:paddingHorizontal="@dimen/app_base_padding"
+        android:paddingVertical="@dimen/app_button_padding_vertical"
+        android:text="@string/app_reload_label"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/app_base_text_size"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_details_text_error" />
+
     <TextView
         android:id="@+id/location_details_type_label"
         android:layout_width="wrap_content"
@@ -48,7 +94,7 @@
         android:text="@string/label_type"
         android:textSize="@dimen/app_base_text_size"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_details_guideline_header" />
+        app:layout_constraintTop_toBottomOf="@id/location_details_progress" />
 
     <TextView
         android:id="@+id/location_details_type_text"
@@ -62,7 +108,7 @@
         android:textSize="@dimen/app_base_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/location_details_type_label"
-        app:layout_constraintTop_toBottomOf="@id/location_details_guideline_header"
+        app:layout_constraintTop_toBottomOf="@id/location_details_progress"
         tools:text="Planet" />
 
     <TextView

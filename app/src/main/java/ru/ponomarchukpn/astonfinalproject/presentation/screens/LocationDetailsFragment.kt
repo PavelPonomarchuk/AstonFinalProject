@@ -2,7 +2,6 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -34,6 +33,7 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
     private var tabName: String? = null
     private var locationId = UNDEFINED_ID
     private var locationEntity: LocationEntity? = null
+    private var loadedCount = COUNT_START
 
     override fun createBinding(): FragmentLocationDetailsBinding {
         return FragmentLocationDetailsBinding.inflate(layoutInflater)
@@ -55,6 +55,7 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
         setButtonBackListener()
         subscribeFlow()
         notifyViewModel()
+        startProgress()
     }
 
     private fun parseArguments() {
@@ -77,11 +78,11 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.locationState
-                    .onEach { setLocationData(it) }
+                    .onEach { processLocation(it) }
                     .launchIn(this)
 
                 viewModel.charactersListState
-                    .onEach { setCharacters(it) }
+                    .onEach { processCharacters(it) }
                     .launchIn(this)
 
                 viewModel.errorState
@@ -89,6 +90,29 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
                     .launchIn(this)
             }
         }
+    }
+
+    private fun processLocation(location: LocationEntity) {
+        setLocationData(location)
+        checkLoadingCompleted()
+    }
+
+    private fun processCharacters(characters: List<CharacterEntity>) {
+        setCharacters(characters)
+        checkLoadingCompleted()
+    }
+
+    private fun checkLoadingCompleted() {
+        loadedCount++
+        if (loadedCount == COUNT_EXPECTED) {
+            stopProgress()
+        }
+    }
+
+    private fun showError() {
+        hideContentViews()
+        stopProgress()
+        showErrorViews()
     }
 
     private fun setLocationData(location: LocationEntity) {
@@ -102,9 +126,47 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
         adapter.submitList(characters)
     }
 
-    private fun showError() {
-        //TODO
-        Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+    private fun showErrorViews() {
+        binding.locationDetailsTextError.visibility = View.VISIBLE
+        binding.locationDetailsButtonReload.visibility = View.VISIBLE
+        binding.locationDetailsButtonReload.setOnClickListener {
+            viewModel.onButtonReloadPressed(locationId)
+            hideErrorViews()
+            showContentViews()
+            startProgress()
+        }
+    }
+
+    private fun hideErrorViews() {
+        binding.locationDetailsTextError.visibility = View.INVISIBLE
+        binding.locationDetailsButtonReload.visibility = View.INVISIBLE
+        binding.locationDetailsButtonReload.setOnClickListener(null)
+    }
+
+    private fun showContentViews() {
+        binding.locationDetailsName.visibility = View.VISIBLE
+        binding.locationDetailsTypeLabel.visibility = View.VISIBLE
+        binding.locationDetailsTypeText.visibility = View.VISIBLE
+        binding.locationDetailsDimensionLabel.visibility = View.VISIBLE
+        binding.locationDetailsDimensionText.visibility = View.VISIBLE
+        binding.locationDetailsRecyclerResidents.visibility = View.VISIBLE
+    }
+
+    private fun hideContentViews() {
+        binding.locationDetailsName.visibility = View.INVISIBLE
+        binding.locationDetailsTypeLabel.visibility = View.INVISIBLE
+        binding.locationDetailsTypeText.visibility = View.INVISIBLE
+        binding.locationDetailsDimensionLabel.visibility = View.INVISIBLE
+        binding.locationDetailsDimensionText.visibility = View.INVISIBLE
+        binding.locationDetailsRecyclerResidents.visibility = View.GONE
+    }
+
+    private fun startProgress() {
+        binding.locationDetailsProgress.visibility = View.VISIBLE
+    }
+
+    private fun stopProgress() {
+        binding.locationDetailsProgress.visibility = View.INVISIBLE
     }
 
     private fun notifyViewModel() {
@@ -126,6 +188,8 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
         private const val KEY_LOCATION_ID = "locationId"
         private const val KEY_TAB_NAME = "tabName"
         private const val UNDEFINED_ID = 0
+        private const val COUNT_START = 0
+        private const val COUNT_EXPECTED = 2
 
         fun newInstance(id: Int, tabName: String) = LocationDetailsFragment().apply {
             arguments = bundleOf(KEY_LOCATION_ID to id, KEY_TAB_NAME to tabName)

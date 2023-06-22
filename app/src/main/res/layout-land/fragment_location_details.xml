@@ -38,6 +38,54 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="@dimen/app_guideline_header_begin" />
 
+    <ProgressBar
+        android:id="@+id/location_details_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/characters_progress_height"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/app_green_light"
+        android:indeterminateTintMode="src_in"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_details_guideline_header" />
+
+    <TextView
+        android:id="@+id/location_details_text_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/app_margin_base"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:elevation="2dp"
+        android:text="@string/message_error_reload"
+        android:textColor="@color/black"
+        android:textSize="@dimen/app_base_text_size"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_details_progress" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/location_details_button_reload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/app_margin_base"
+        android:background="@drawable/colored_button_ripple"
+        android:elevation="2dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="@dimen/app_base_padding"
+        android:paddingVertical="@dimen/app_button_padding_vertical"
+        android:text="@string/app_reload_label"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/app_base_text_size"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_details_text_error" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/location_details_guideline_vertical"
         android:layout_width="wrap_content"
@@ -101,13 +149,12 @@
         android:id="@+id/location_details_recycler_residents"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/app_margin_base"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_details_dimension_text"
+        app:layout_constraintTop_toBottomOf="@id/location_details_progress"
         tools:listitem="@layout/item_character" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
