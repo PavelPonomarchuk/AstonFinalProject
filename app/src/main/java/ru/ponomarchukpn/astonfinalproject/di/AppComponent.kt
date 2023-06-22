@@ -12,7 +12,6 @@ import ru.ponomarchukpn.astonfinalproject.presentation.screens.EpisodesFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationDetailsFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationsFilterFragment
 import ru.ponomarchukpn.astonfinalproject.presentation.screens.LocationsFragment
-import ru.ponomarchukpn.astonfinalproject.presentation.screens.MainActivity
 import javax.inject.Singleton
 
 @Singleton
@@ -25,8 +24,6 @@ import javax.inject.Singleton
     ]
 )
 interface AppComponent {
-
-    fun inject(mainActivity: MainActivity) //TODO м.б. убрать
 
     fun inject(charactersFragment: CharactersFragment)
     fun inject(characterDetailsFragment: CharacterDetailsFragment)

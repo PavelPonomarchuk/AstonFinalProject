@@ -7,5 +7,5 @@ class GetSingleEpisodeUseCase @Inject constructor(
     private val repository: EpisodesRepository
 ) {
 
-    suspend operator fun invoke(episodeId: Int) = repository.getEpisode(episodeId)
+    operator fun invoke(episodeId: Int) = repository.getEpisode(episodeId)
 }

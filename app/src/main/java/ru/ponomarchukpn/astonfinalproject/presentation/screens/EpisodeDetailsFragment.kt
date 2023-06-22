@@ -2,7 +2,6 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -34,6 +33,7 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
     private var tabName: String? = null
     private var episodeId = UNDEFINED_ID
     private var episodeEntity: EpisodeEntity? = null
+    private var loadedCount = COUNT_START
 
     override fun createBinding(): FragmentEpisodeDetailsBinding {
         return FragmentEpisodeDetailsBinding.inflate(layoutInflater)
@@ -55,6 +55,7 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
         setButtonBackListener()
         subscribeFlow()
         notifyViewModel()
+        startProgress()
     }
 
     private fun parseArguments() {
@@ -77,11 +78,11 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.episodeState
-                    .onEach { setEpisodeData(it) }
+                    .onEach { processEpisode(it) }
                     .launchIn(this)
 
                 viewModel.charactersListState
-                    .onEach { setCharacters(it) }
+                    .onEach { processCharacters(it) }
                     .launchIn(this)
 
                 viewModel.errorState
@@ -89,6 +90,29 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
                     .launchIn(this)
             }
         }
+    }
+
+    private fun processEpisode(episode: EpisodeEntity) {
+        setEpisodeData(episode)
+        checkLoadingCompleted()
+    }
+
+    private fun processCharacters(characters: List<CharacterEntity>) {
+        setCharacters(characters)
+        checkLoadingCompleted()
+    }
+
+    private fun checkLoadingCompleted() {
+        loadedCount++
+        if (loadedCount == COUNT_EXPECTED) {
+            stopProgress()
+        }
+    }
+
+    private fun showError() {
+        hideContentViews()
+        stopProgress()
+        showErrorViews()
     }
 
     private fun setEpisodeData(episode: EpisodeEntity) {
@@ -102,9 +126,47 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
         adapter.submitList(characters)
     }
 
-    private fun showError() {
-        //TODO
-        Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+    private fun showErrorViews() {
+        binding.episodeDetailsTextError.visibility = View.VISIBLE
+        binding.episodeDetailsButtonReload.visibility = View.VISIBLE
+        binding.episodeDetailsButtonReload.setOnClickListener {
+            viewModel.onButtonReloadPressed(episodeId)
+            hideErrorViews()
+            showContentViews()
+            startProgress()
+        }
+    }
+
+    private fun hideErrorViews() {
+        binding.episodeDetailsTextError.visibility = View.INVISIBLE
+        binding.episodeDetailsButtonReload.visibility = View.INVISIBLE
+        binding.episodeDetailsButtonReload.setOnClickListener(null)
+    }
+
+    private fun showContentViews() {
+        binding.episodeDetailsName.visibility = View.VISIBLE
+        binding.episodeDetailsCodeLabel.visibility = View.VISIBLE
+        binding.episodeDetailsCodeText.visibility = View.VISIBLE
+        binding.episodeDetailsAirDateLabel.visibility = View.VISIBLE
+        binding.episodeDetailsAirDateText.visibility = View.VISIBLE
+        binding.episodeDetailsRecyclerCharacters.visibility = View.VISIBLE
+    }
+
+    private fun hideContentViews() {
+        binding.episodeDetailsName.visibility = View.INVISIBLE
+        binding.episodeDetailsCodeLabel.visibility = View.INVISIBLE
+        binding.episodeDetailsCodeText.visibility = View.INVISIBLE
+        binding.episodeDetailsAirDateLabel.visibility = View.INVISIBLE
+        binding.episodeDetailsAirDateText.visibility = View.INVISIBLE
+        binding.episodeDetailsRecyclerCharacters.visibility = View.GONE
+    }
+
+    private fun startProgress() {
+        binding.episodeDetailsProgress.visibility = View.VISIBLE
+    }
+
+    private fun stopProgress() {
+        binding.episodeDetailsProgress.visibility = View.INVISIBLE
     }
 
     private fun notifyViewModel() {
@@ -126,6 +188,8 @@ class EpisodeDetailsFragment : BaseFragment<FragmentEpisodeDetailsBinding, Episo
         private const val KEY_EPISODE_ID = "episodeId"
         private const val KEY_TAB_NAME = "tabName"
         private const val UNDEFINED_ID = 0
+        private const val COUNT_START = 0
+        private const val COUNT_EXPECTED = 2
 
         fun newInstance(id: Int, tabName: String) = EpisodeDetailsFragment().apply {
             arguments = bundleOf(KEY_EPISODE_ID to id, KEY_TAB_NAME to tabName)
