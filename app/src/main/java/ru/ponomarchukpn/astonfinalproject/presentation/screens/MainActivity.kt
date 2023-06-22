@@ -2,8 +2,14 @@ package ru.ponomarchukpn.astonfinalproject.presentation.screens
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.navigation.NavigationBarView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.ponomarchukpn.astonfinalproject.R
 import ru.ponomarchukpn.astonfinalproject.databinding.ActivityMainBinding
 
@@ -35,9 +41,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupSplashScreen()
         setContentView(binding.root)
         setNavigationListener()
         setDefaultSelectedTab(savedInstanceState)
+    }
+
+    private fun setupSplashScreen() {
+        var keepSplashScreenOn = true
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                delay(SPLASH_SCREEN_TIMEOUT)
+                keepSplashScreenOn = false
+            }
+        }
+
+        installSplashScreen().setKeepOnScreenCondition {
+            keepSplashScreenOn
+        }
     }
 
     private fun setNavigationListener() {
@@ -67,5 +89,6 @@ class MainActivity : AppCompatActivity() {
         private const val TAB_NAME_CHARACTERS = "tabCharacters"
         private const val TAB_NAME_LOCATIONS = "tabLocations"
         private const val TAB_NAME_EPISODES = "tabEpisodes"
+        private const val SPLASH_SCREEN_TIMEOUT = 3000L
     }
 }
