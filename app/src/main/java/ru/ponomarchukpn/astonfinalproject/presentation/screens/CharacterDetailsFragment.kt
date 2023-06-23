@@ -62,7 +62,10 @@ class CharacterDetailsFragment :
         setLocationListener()
         subscribeFlow()
         notifyViewModel()
-        startProgress()
+
+        if (loadedCount == COUNT_START) {
+            startProgress()
+        }
     }
 
     private fun parseArguments() {

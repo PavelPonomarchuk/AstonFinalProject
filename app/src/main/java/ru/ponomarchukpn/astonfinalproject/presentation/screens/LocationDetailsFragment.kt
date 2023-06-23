@@ -55,7 +55,10 @@ class LocationDetailsFragment : BaseFragment<FragmentLocationDetailsBinding, Loc
         setButtonBackListener()
         subscribeFlow()
         notifyViewModel()
-        startProgress()
+
+        if (loadedCount == COUNT_START) {
+            startProgress()
+        }
     }
 
     private fun parseArguments() {
