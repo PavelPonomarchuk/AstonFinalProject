@@ -30,7 +30,7 @@ class CharactersRepositoryImpl @Inject constructor(
         return try {
             val pageDto = apiService.loadPage(pageNumber)
             charactersDao.insertList(
-                mapper.mapPageDtoToDbModelList(pageDto)
+                mapper.mapPageToDbModelList(pageDto)
             )
             true
         } catch (exception: Throwable) {

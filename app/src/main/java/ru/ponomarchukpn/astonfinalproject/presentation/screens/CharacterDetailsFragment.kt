@@ -174,7 +174,9 @@ class CharacterDetailsFragment :
             CharacterGender.GENDERLESS -> getString(R.string.gender_genderless)
             CharacterGender.UNKNOWN -> getString(R.string.gender_unknown)
         }
-        binding.characterDetailsImage.load(character.imageUrl)
+        binding.characterDetailsImage.load(character.imageUrl) {
+            error(R.drawable.placeholder_avatar)
+        }
     }
 
     private fun setOriginName(name: String) {

@@ -12,36 +12,13 @@ import javax.inject.Singleton
 @Singleton
 class EpisodeMapper @Inject constructor() {
 
-    //TODO прибрать
-
-    fun mapPageToEntitiesList(page: ResponseDto) = mutableListOf<EpisodeEntity>().apply {
-        page.results.forEach { episodeJsonObject ->
-            Gson().fromJson(episodeJsonObject, EpisodeDto::class.java)?.let {
-                this.add(mapDtoToEntity(it))
+    fun mapPageToDbModelsList(page: ResponseDto) = mutableListOf<EpisodeDbModel>().apply {
+        page.results.forEach { json ->
+            Gson().fromJson(json, EpisodeDto::class.java)?.let {
+                this.add(mapDtoToDbModel(it))
             }
         }
     }.toList()
-
-    fun mapDtoListToEntityList(dtoList: List<EpisodeDto>) = dtoList.map { mapDtoToEntity(it) }
-
-    fun mapDtoToEntity(dto: EpisodeDto) = EpisodeEntity(
-        id = dto.id,
-        name = dto.name,
-        airDate = dto.airDate,
-        episode = dto.episode,
-        charactersId = dto.characters.getIdListFromUrls(),
-        url = dto.url,
-        created = dto.created
-    )
-
-    fun mapPageToDbModelsList(page: ResponseDto) =
-        mutableListOf<EpisodeDbModel>().apply {
-            page.results.forEach { episodeJsonObject ->
-                Gson().fromJson(episodeJsonObject, EpisodeDto::class.java)?.let {
-                    this.add(mapDtoToDbModel(it))
-                }
-            }
-        }.toList()
 
     fun mapDtoListToDbModelList(dtoList: List<EpisodeDto>) = dtoList.map { mapDtoToDbModel(it) }
 
@@ -67,7 +44,7 @@ class EpisodeMapper @Inject constructor() {
         charactersId = if (dbModel.charactersId != "") {
             dbModel.charactersId.split(",").map { it.trim().toInt() }
         } else {
-               emptyList()
+            emptyList()
         },
         url = dbModel.url,
         created = dbModel.created

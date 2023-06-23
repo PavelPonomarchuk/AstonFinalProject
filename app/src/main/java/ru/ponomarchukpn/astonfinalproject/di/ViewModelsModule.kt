@@ -14,24 +14,16 @@ import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.EpisodesViewMod
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.LocationDetailsViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.LocationsFilterViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.LocationsViewModel
-import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.MainViewModel
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.ViewModelFactory
 import ru.ponomarchukpn.astonfinalproject.presentation.viewmodel.ViewModelKey
 
 @Module
 interface ViewModelsModule {
 
-    //TODO проверить какие вью модели нужны, удалить ненужное
-
     @Binds
     fun bindViewModelFactory(
         viewModelFactory: ViewModelFactory
     ): ViewModelProvider.Factory
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(MainViewModel::class)
-    fun bindMainViewModel(mainViewModel: MainViewModel): ViewModel
 
     @Binds
     @IntoMap
