@@ -41,13 +41,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupSplashScreen()
+
+        if (savedInstanceState == null) {
+            setupSplashScreenWithDelay()
+        } else {
+            installSplashScreen()
+        }
+
         setContentView(binding.root)
         setNavigationListener()
         setDefaultSelectedTab(savedInstanceState)
     }
 
-    private fun setupSplashScreen() {
+    private fun setupSplashScreenWithDelay() {
         var keepSplashScreenOn = true
 
         lifecycleScope.launch {
